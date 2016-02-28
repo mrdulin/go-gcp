@@ -1,4 +1,4 @@
-# Ddecorators
+# js decorators
 
 当多个装饰器应用在一个声明上时会进行如下步骤的操作：
 
