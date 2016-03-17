@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $q.all()用法</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    ## demo.model.result ##
+</div>
+
+
+<script>
+
+    angular.module('demo', [
+
+    ]);
+
+    (function() {
+        angular
+                .module('demo')
+                .config(config);
+
+        config.$inject = ['$interpolateProvider'];
+
+        function config($interpolateProvider) {
+            $interpolateProvider.startSymbol('##');
+            $interpolateProvider.endSymbol('##');
+        }
+
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['DemoService'];
+
+        function DemoController(DemoService) {
+
+            var ctrl = this;
+            ctrl.model = {};
+            ctrl.fn = {};
+
+            DemoService.combinedRequest().then(successCallBack);
+
+            function successCallBack(data) {
+                ctrl.model.result = data;
+            }
+        }
+    })();
+
+
+    (function() {
+        angular
+                .module('demo')
+                .factory('DemoService', DemoService);
+
+        DemoService.$inject = ['$http', '$q'];
+
+        function DemoService($http, $q) {
+
+            var service = {
+                combinedRequest: combinedRequest
+            };
+            return service;
+
+
+            function request1() {
+                return $http.get('../data/request1.json');
+            }
+
+            function request2() {
+                return $http.get('../data/request2.json');
+            }
+
+            function request3() {
+                return $http.get('../data/request3.json');
+            }
+
+            function combinedRequest() {
+                var promise1 = request1(),
+                    promise2 = request2(),
+                    promise3 = request3();
+
+                var deferred = $q.defer();
+
+                var allPromise = $q.all([promise1, promise2, promise3]);
+
+                allPromise
+                        .then(successCallBack)
+                        .then(completeCallBack);
+
+                function successCallBack(result) {
+                    var tmp = [];
+                    angular.forEach(result, function(response) {
+                        tmp.push(response.data.name);
+                    });
+                    return tmp;
+                }
+
+                function completeCallBack(tmp) {
+                    deferred.resolve(tmp.join(','));
+                }
+
+                return deferred.promise;
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

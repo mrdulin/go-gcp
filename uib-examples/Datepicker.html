@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.datepicker用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+    <style>
+        .full button span {
+            background-color: limegreen;
+            border-radius: 32px;
+            color: black;
+        }
+
+        .partially button span {
+            background-color: orange;
+            border-radius: 32px;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Datepicker
+                        <small>(ui.bootstrap.datepicker)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <pre>选择的日期: <em>{{demo.model.dt | date:'fullDate' }}</em></pre>
+
+                            <h4>Inline</h4>
+
+                            <div style="display:inline-block; min-height:290px;">
+                                <uib-datepicker ng-model="demo.model.dt"
+                                                min-date="demo.model.minDate"
+                                                show-weeks="true"
+                                                year-range="5"
+                                                class="well well-sm"
+                                                custom-class="demo.fn.getDayClass(date, mode)">
+                                </uib-datepicker>
+                            </div>
+
+                            <h4>Popup</h4>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p class="input-group">
+                                        <input type="text"
+                                               class="form-control"
+                                               uib-datepicker-popup="{{format}}"
+                                               ng-model="demo.model.dt"
+                                               is-open="demo.model.opened"
+                                               min-date="demo.model.minDate"
+                                               max-date="demo.model.maxDate"
+                                               datepicker-options="demo.model.dateOptions"
+                                               date-disabled="demo.fn.disabled(date, mode)"
+                                               ng-required="true"
+                                               current-text="选择今天"
+                                               clear-text="清空"
+                                               close-text="关闭"/>
+
+                                        <span class="input-group-btn">
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="demo.fn.open($event)">
+                                                <i class="glyphicon glyphicon-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </p>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <p class="input-group">
+                                        <input type="date"
+                                               class="form-control"
+                                               show-button-bar="false"
+                                               uib-datepicker-popup
+                                               ng-model="demo.model.dt"
+                                               is-open="demo.model.opened"
+                                               min-date="demo.model.minDate"
+                                               max-date="demo.model.maxDate"
+                                               datepicker-options="demo.model.dateOptions"
+                                               date-disabled="demo.fn.disabled(date, mode)"
+                                               ng-required="true"
+                                               current-text="选择今天"
+                                               clear-text="清空"
+                                               close-text="关闭"/>
+
+                                        <span class="input-group-btn">
+                                            <button type="button"
+                                                    class="btn btn-default"
+                                                    ng-click="demo.fn.open($event)">
+                                                <i class="glyphicon glyphicon-calendar"></i>
+                                            </button>
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label>日期格式:</label>
+                                    <select class="form-control"
+                                            ng-model="demo.model.format"
+                                            ng-options="f for f in demo.model.formats">
+                                        <option></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            <button type="button" class="btn btn-sm btn-info" ng-click="demo.fn.today()">设置为今天</button>
+                            <button type="button" class="btn btn-sm btn-default" ng-click="demo.fn.setDate(2009, 7, 24)">
+                                2009-08-24
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" ng-click="demo.fn.clear()">清空</button>
+                            <button type="button"
+                                    class="btn btn-sm btn-default"
+                                    ng-click="demo.fn.toggleMin()"
+                                    uib-tooltip="After today restriction">
+                                是否有最小日期
+                            </button>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>Datepicker配置</h3>
+
+                            <p>所有的配置属性都可以在<code>uib-datepicker</code>上使用，或者通过<code>uibDatepickerConfig</code>全局设置。</p>
+
+                            <ul>
+                                <li>
+                                    <em><code>ng-model</code></em>:原生的JavaScript日期对象。
+                                </li>
+                                <li>
+                                    <em><code>datepicker-mode</code>(默认值：'day')</em>:日期控件的模式，可选为(<em>day|month|year</em>)。
+                                </li>
+                                <li>
+                                    <em><code>min-date</code>(默认值：null)</em>:定义可选择的最小日期。
+                                </li>
+                                <li>
+                                    <em><code>max-date</code>(默认值：null)</em>:定义可选择的最大日期。
+                                </li>
+                                <li>
+                                    <em><code>date-disabled(date, mode)</code>(默认值：null)</em>
+                                    : 如果mode是day，则date是每一个day，如果mode是month，则date是每个month，mode是year，date是每个year
+                                    ，可以进行判断后，控制这一day或者month或者year是否可选择。true则不可选择，false可以选择。
+                                </li>
+                                <li>
+                                    <em><code>custom-class(date, mode)</code>(默认值：null)</em>
+                                    : date同上，可以进行判断后，控制这一day或者month或者year的DOM元素的class。
+                                </li>
+                                <li>
+                                    <em><code>show-weeks</code>(默认值：true)</em>
+                                    : 是否显示星期数
+                                </li>
+                                <li>
+                                    <em><code>starting-day</code>(默认值：0)</em>
+                                    : 设置一周的开始是哪一天。0-6(0=星期天, ... 6=星期六)。
+                                </li>
+                                <li>
+                                    <em><code>init-date</code></em>
+                                    :
+                                </li>
+                                <li>
+                                    <em><code>min-mode</code>(默认值：'day')</em>
+                                    : 设置可选择的最小模式，如果是'day'，表示可选择到日，如果是'month'，表示可选择到月，'year'同理。
+                                </li>
+                                <li>
+                                    <em><code>max-mode</code>(默认值：'year')</em>
+                                    : 设置可选择的最大模式，如果是'year'表示可选择到年，如果是'month'，表示可选择到月，'day'同理。
+                                </li>
+                                <li>
+                                    <em><code>format-day</code>(默认值：'dd')</em>
+                                    : 日期的格式
+                                </li>
+                                <li>
+                                    <em><code>format-month</code>(默认值：'MMMM')</em>
+                                    : 月份的格式
+                                </li>
+                                <li>
+                                    <em><code>format-year</code>(默认值：'yyyy')</em>
+                                    : 年份的格式
+                                </li>
+                                <li>
+                                    <em><code>format-day-header</code>(默认值：'EEE')</em>
+                                    : 星期的格式
+                                </li>
+                                <li>
+                                    <em><code>format-day-title</code>(默认值：'MMMM yyyy')</em>
+                                    :
+                                </li>
+                                <li>
+                                    <em><code>format-month-title</code></em>
+                                </li>
+                                <li>
+                                    <em><code>year-range</code>(默认值：'20')</em>
+                                    : 可选择年份数量
+                                </li>
+                                <li>
+                                    <em><code>shortcut-propagation</code></em>
+                                </li>
+                                <li>
+                                    <em><code>template-url</code>(默认值：'template/datepicker/datepicker.html')</em>
+                                    : 指定自定义模版路径
+                                </li>
+                            </ul>
+
+                            <h3>日期弹出控件配置</h3>
+
+                            <p>
+                                可以给<code>datepicker-options</code>属性指定一个JSON格式的配置对象来配置<code>uib-datepicker-popup</code>指令。
+                                或者通过<code>uibDatepickerPopupConfig</code>全局设置。
+                            </p>
+                            <ul>
+                                <li>
+                                    <em><code>uib-datepicker-popup</code>(默认值： 'yyyy-MM-dd')</em>
+                                    : 在日期控件中显示的日期格式，如(input中)
+                                </li>
+                                <li>
+                                    <em><code>show-button-bar</code>(默认值：true)</em>
+                                    : 是否在弹出的日期控件下方显示按钮。
+                                </li>
+                                <li>
+                                    <em><code>current-text</code>(默认值：'Today')</em>
+                                    : 选择今天的按钮文本
+                                </li>
+                                <li>
+                                    <em><code>clear-text</code>(默认值：'clear')</em>
+                                    : 清空日期按钮的文本
+                                </li>
+                                <li>
+                                    <em><code>close-text</code>(默认值：'close')</em>
+                                    : 关闭按钮的文本
+                                </li>
+                                <li>
+                                    <em><code>close-on-date-selection</code>(默认值：true)</em>
+                                    : 选择日期后是否关闭弹出的日期控件。
+                                </li>
+                                <li>
+                                    <em><code>datepicker-popup-template-url</code>(默认值： 'template/datepicker/popup.html')</em>
+                                    : 指定弹出的日期控件的自定义模版路径。
+                                </li>
+                                <li>
+                                    <em><code>datepicker-template-url</code>(默认值: 'template/datepicker/datepicker.html')</em>
+                                    : 指定日期控件的自定义模版路径。
+                                </li>
+                                <li>
+                                    <em><code>datepicker-append-to-body</code>(默认值: false)</em>
+                                    : 是否将日期控件的弹框添加到body元素下，而不是<code>datepicker-popup</code>指令后。如果要全局设置，
+                                    使用<code>uibDatepickerPopupConfig.appendToBody</code>。
+                                </li>
+                                <li>
+                                    <em><code>is-open</code>(默认值：false)</em>
+                                    : 是否显示日期控件。
+                                </li>
+                                <li>
+                                    <em><code>on-open-focus</code>(默认值：true)</em>
+                                    : 打开日期控件弹出框时，是否将焦点移到弹出框。
+                                </li>
+                            </ul>
+
+                            <h3>键盘快捷键支持</h3>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+
+            var tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            var afterTomorrow = new Date();
+            afterTomorrow.setDate(tomorrow.getDate() + 2);
+
+            ctrl.model = {
+                dt: null,
+                events: [
+                    {
+                        date: tomorrow,
+                        status: 'full'
+                    },
+                    {
+                        date: afterTomorrow,
+                        status: 'partially'
+                    }
+                ],
+                open: false,
+                formats:  ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'],
+                format: null,
+                dateOptions: {
+                    formatYear: 'yy',
+                    startingDay: 1
+                },
+                opened: false,
+                maxDate: new Date(2020, 5, 22)
+            };
+
+            ctrl.model.format = ctrl.model.formats[0];
+
+            ctrl.fn = {
+                getDayClass: getDayClass,
+                open: open,
+                today: today,
+                toggleMin: toggleMin,
+                clear: clear,
+                setDate: setDate,
+                disabled: disabled
+            };
+
+            ctrl.fn.today();
+            ctrl.fn.toggleMin();
+
+
+            function disabled (date, mode) {
+                return ( mode === 'day' && ( date.getDay() === 0 || date.getDay() === 6 ) );
+            }
+
+            function setDate(y, m, d) {
+                ctrl.model.dt = new Date(y, m, d);
+            }
+
+            function clear() {
+                ctrl.model.dt = null;
+            }
+
+            function toggleMin() {
+                ctrl.model.minDate = ctrl.model.minDate ? null : new Date();
+            }
+
+            function today() {
+                ctrl.model.dt = new Date();
+            }
+
+            function open() {
+                ctrl.model.opened = true;
+            }
+
+            function getDayClass(date, mode) {
+                if (mode === 'day') {
+                    var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
+
+                    for (var i = 0; i < ctrl.model.events.length; i++) {
+                        var currentDay = new Date(ctrl.model.events[i].date).setHours(0, 0, 0, 0);
+
+                        if (dayToCheck === currentDay) {
+                            return ctrl.model.events[i].status;
+                        }
+                    }
+                }
+                return '';
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

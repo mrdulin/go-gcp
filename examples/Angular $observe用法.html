@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $observe用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/qrcode.js/qrcode.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    <form name="urlForm" class="form-inline" novalidate>
+        <div class="form-group">
+            <label>
+                url:
+                <input type="url"
+                       class="form-control"
+                       name="urlField"
+                       required
+                       ng-change="demo.fn.validCheck(urlForm)"
+                       ng-model="demo.model.qrcodeConfig.text"
+                       ng-model-options="{updateOn: 'default blur', debounce: {default: 500, blur: 0}}"/>
+            </label>
+        </div>
+        <div role="alert">
+            <span class="text-danger" ng-show="urlForm.urlField.$error.required">
+                Required!
+            </span>
+            <span class="text-danger" ng-show="urlForm.urlField.$error.url">
+                Not valid url!
+            </span>
+        </div>
+    </form>
+
+
+    <qr-code url="{{demo.model.qrcodeConfig.text}}" valid="demo.model.valid" config="demo.model.qrcodeConfig"></qr-code>
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                valid: true,
+                qrcodeConfig: {
+                    text: 'http://github.com',
+                    width: 200,
+                    height: 200
+                }
+            };
+
+            ctrl.fn = {
+                validCheck: validCheck
+            };
+
+            function validCheck(urlForm) {
+                ctrl.model.valid = urlForm.$valid;
+            }
+
+        }
+    })();
+
+    (function () {
+        angular
+                .module('demo')
+                .directive('qrCode', qrCode);
+
+        qrCode.$inject = ['$log', '$document'];
+
+        function qrCode($log, $document) {
+            return {
+                restrict: 'EA',
+                scope: {
+                    valid: '=',
+                    config: '='
+                },
+                template: getTemplate,
+                replace: true,
+                transclude: true,
+                link: link,
+                controller: ['$log', qrCodeController],
+                controllerAs: qrCode,
+                require: '^qrCode'
+            };
+
+            function qrCodeController($log) {
+
+                var ctrl = this;
+
+                var qrcodeInstance;
+
+                ctrl.model = {
+                    config: {
+                        text: '',
+                        width: 128,
+                        height: 128,
+                        colorDark: "#000000",
+                        colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    }
+                };
+
+                ctrl.fn = {
+                    makeCode: makeCode,
+                    initQrcode: initQrcode
+                };
+
+                function makeCode(url) {
+                    qrcodeInstance.clear();
+                    qrcodeInstance.makeCode(url);
+                }
+
+                function initQrcode(dom, config) {
+                    if(!qrcodeInstance) {
+                        qrcodeInstance = new QRCode(dom, config);
+                    }
+                    return qrcodeInstance;
+                }
+            }
+
+            function getTemplate() {
+                var templateDom = $document[0].getElementById('template');
+                return angular.element(templateDom).html();
+            }
+
+            function link(scope, element, attr, ctrl) {
+
+                var qrcodeDom = $document[0].getElementById('qrcode'), qrcodeInstance;
+
+                scope.qrcodeConfig = angular.extend(ctrl.model.config, scope.config);
+
+                attr.$observe('url', function (url) {
+                    $log.info("url:", url, "valid:", scope.valid);
+
+                    if(scope.valid) {
+                        if (!qrcodeInstance) {
+                            $log.info('init');
+                            qrcodeInstance = ctrl.fn.initQrcode(qrcodeDom, scope.qrcodeConfig);
+                        } else {
+                            $log.info('makecode');
+                            ctrl.fn.makeCode(url);
+                        }
+                    }
+                });
+            }
+        }
+    })();
+</script>
+<script id="template" type="text/html">
+    <div>
+        <p>动态二维码</p>
+        <div id="qrcode" ng-style="{width: qrcodeConfig.width, height: qrcodeConfig.height}"></div>
+    </div>
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.timepicker用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Timepicker
+                        <small>(ui.bootstrap.timepicker)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <uib-timepicker ng-model="demo.model.mytime"
+                                            ng-change="demo.fn.changed()"
+                                            hour-step="demo.model.hstep"
+                                            minute-step="demo.model.mstep"
+                                            show-meridian="demo.model.ismeridian">
+                            </uib-timepicker>
+
+                            <pre class="alert alert-info">时间: {{demo.model.mytime | date:'shortTime' }}</pre>
+
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    Hours step is:
+                                    <select class="form-control"
+                                            ng-model="demo.model.hstep"
+                                            ng-options="opt for opt in demo.model.options.hstep">
+                                    </select>
+                                </div>
+                                <div class="col-xs-6">
+                                    Minutes step is:
+                                    <select class="form-control"
+                                            ng-model="demo.model.mstep"
+                                            ng-options="opt for opt in demo.model.options.mstep">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <button type="button" class="btn btn-info" ng-click="demo.fn.toggleMode()">12H / 24H
+                            </button>
+                            <button type="button" class="btn btn-default" ng-click="demo.fn.update()">Set to 14:00
+                            </button>
+                            <button type="button" class="btn btn-danger" ng-click="demo.fn.clear()">Clear</button>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                下面所有的配置可以作为属性添加在 <code>uib-timepicker</code>指令上，
+                                或者通过 <code>uibTimepickerConfig</code>进行全局配置。
+                            </p>
+
+                            <ul>
+                                <li>
+                                    <em><code>ng-model</code></em>
+                                    : 日期对象
+                                </li>
+                                <li>
+                                    <em><code>template-url</code>(默认值：template/timepicker/timepicker.html)</em>
+                                    : 指定自定义模版的路径。
+                                </li>
+                                <li>
+                                    <em><code>hour-step</code>(默认值：1)</em>
+                                    : 加或减小时按钮的步长。
+                                </li>
+                                <li>
+                                    <em><code>minute-step</code>(默认值：1)</em>
+                                    : 加或减分钟按钮的步长。
+                                </li>
+                                <li>
+                                    <em><code>show-meridian</code>(默认值：true)</em>
+                                    : 12小时制还是24小时制。
+                                </li>
+                                <li>
+                                    <em><code>meridians</code>(默认值：null)</em>
+                                    : "上午"，"下午"的文本，以使用的locale为基础。可以提供['AM', 'PM']这样的数组来自定义。
+                                </li>
+                                <li>
+                                    <em><code>readonly-input</code>(默认值：false)</em>
+                                    : 用户是否可以在时间控件的input中输入。
+                                </li>
+                                <li>
+                                    <em><code>mousewheel</code>(默认值：true)</em>
+                                    : 是否开启鼠标滚轮进行时间选择。
+                                </li>
+                                <li>
+                                    <em><code>arrowkeys</code>(默认值：true)</em>
+                                    : 是否开启键盘方向键进行时间选择。
+                                </li>
+                                <li>
+                                    <em><code>show-spinners</code>(默认值：true)</em>
+                                    : 是否显示日期选择input上下的增减时间的按钮。
+                                </li>
+                                <li>
+                                    <em><code>min</code>(默认值：undefined)</em>
+                                    : 用户可选择的最小时间
+                                </li>
+                                <li>
+                                    <em><code>max</code>(默认值：undefined)</em>
+                                    : 用户可选择的最大时间
+                                </li>
+                                <li>
+                                    <em><code>tabindex</code>(默认值：0)</em>
+                                    : 给每一个时间控件设置tabindex，按tab键切换的顺序
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                mytime: new Date(),
+                hstep: 1,
+                mstep: 15,
+                options: {
+                    hstep: [1, 2, 3],
+                    mstep: [1, 5, 10, 15, 25, 30]
+                },
+                ismeridian: true
+            };
+            ctrl.fn = {
+                toggleMode: toggleMode,
+                update: update,
+                changed: changed,
+                clear: clear
+            };
+
+            function toggleMode() {
+                ctrl.model.ismeridian = !ctrl.model.ismeridian;
+            }
+
+            function update() {
+                var d = new Date();
+                d.setHours(14);
+                d.setMinutes(0);
+                ctrl.model.mytime = d;
+            }
+
+            function changed() {
+                $log.log('Time changed to: ' + ctrl.model.mytime);
+            }
+
+            function clear() {
+                ctrl.model.mytime = null;
+            }
+        }
+    })();
+</script>
+</body>
+</html>
+
+

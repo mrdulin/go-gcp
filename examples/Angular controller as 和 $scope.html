@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular controller as 和 $scope</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <style>
+        .parent{
+            border: 1px solid red;
+            padding: 20px;
+        }
+        .child{
+            border: 1px solid red;
+            padding: 20px;
+            margin: 10px;
+        }
+    </style>
+</head>
+<body>
+<p>使用$scope绑定数据的例子</p>
+<p>例1:</p>
+<div class="parent" ng-controller="ParentController">
+    ParentController:<input type="text" ng-model="foo"/>foo: {{ foo }}
+    <div class="child" ng-controller="ChildController">
+        ChildController:<input type="text" ng-model="foo"/>foo: {{ foo }}
+    </div>
+</div>
+
+<p>例2:</p>
+<div class="parent" ng-controller="ParentController">
+    ParentController:<input type="text" ng-model="obj.foo"/>foo: {{ obj.foo }}
+    <div class="child" ng-controller="ChildController">
+        ChildController:<input type="text" ng-model="obj.foo"/>foo: {{ obj.foo }}
+    </div>
+</div>
+
+<p>处理以上的问题很烦，所以我们用controller as</p>
+
+<p>使用controller as的绑定数据的例子</p>
+<div class="parent" ng-controller="ParentController as parent">
+    ParentController:<input type="text" ng-model="parent.name"/>foo: {{ parent.name }}
+    <div class="child" ng-controller="ChildController as child">
+        ChildController:<input type="text" ng-model="parent.name"/>foo: {{ parent.name }}
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', []);
+
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('ParentController', ParentController);
+
+        ParentController.$inject = ['$scope'];
+
+        function ParentController($scope) {
+
+            $scope.foo = 'bar';
+
+            $scope.obj = {
+                foo: 'bar'
+            };
+
+            this.name = 'angular';
+
+        }
+
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('ChildController', ChildController);
+
+        ChildController.$inject = ['$scope'];
+
+        function ChildController($scope) {
+
+        }
+
+    })();
+
+</script>
+</body>
+</html>
+
+

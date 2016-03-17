@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.dropdown用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Dropdown
+                        <small>(ui.bootstrap.dropdown)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <!-- Simple dropdown -->
+                            <span uib-dropdown on-toggle="demo.fn.toggled(open)">
+                                <a href id="simple-dropdown" uib-dropdown-toggle>下拉菜单</a>
+
+                                <ul class="uib-dropdown-menu" aria-labelledby="simple-dropdown">
+                                    <li ng-repeat="choice in demo.model.items">
+                                        <a href>{{choice}}</a>
+                                    </li>
+                                </ul>
+                            </span>
+
+                            <!-- Single button -->
+                            <div class="btn-group"
+                                 uib-dropdown
+                                 is-open="demo.model.isopen" >
+                                <button id="single-button"
+                                        type="button"
+                                        class="btn btn-primary"
+                                        uib-dropdown-toggle
+                                        ng-disabled="disabled">
+                                    按钮式下拉菜单
+                                    <span class="caret"></span>
+                                </button>
+
+                                <ul class="uib-dropdown-menu" role="menu" aria-labelledby="single-button">
+                                    <li role="menuitem"><a href="#">Action</a></li>
+                                    <li role="menuitem"><a href="#">Another action</a></li>
+                                    <li role="menuitem"><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li role="menuitem"><a href="#">Separated link</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Split button -->
+                            <div class="btn-group" uib-dropdown>
+                                <button id="split-button" type="button" class="btn btn-danger">分裂式按钮下拉菜单</button>
+                                <button type="button" class="btn btn-danger" uib-dropdown-toggle>
+                                    <span class="caret"></span>
+                                    <span class="sr-only">分裂式按钮下拉菜单</span>
+                                </button>
+                                <ul class="uib-dropdown-menu" role="menu" aria-labelledby="split-button">
+                                    <li role="menuitem"><a href="#">Action</a></li>
+                                    <li role="menuitem"><a href="#">Another action</a></li>
+                                    <li role="menuitem"><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li role="menuitem"><a href="#">Separated link</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Single button using append-to-body -->
+                            <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                                <button id="btn-append-to-body" type="button" class="btn btn-primary"
+                                        uib-dropdown-toggle>
+                                    添加在body下的下拉菜单
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="uib-dropdown-menu" role="menu" aria-labelledby="btn-append-to-body">
+                                    <li role="menuitem"><a href="#">Action</a></li>
+                                    <li role="menuitem"><a href="#">Another action</a></li>
+                                    <li role="menuitem"><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li role="menuitem"><a href="#">Separated link</a></li>
+                                </ul>
+                            </div>
+
+                            <!-- Single button using template-url -->
+                            <div class="btn-group" uib-dropdown>
+                                <button id="button-template-url" type="button" class="btn btn-primary"
+                                        uib-dropdown-toggle ng-disabled="disabled">
+                                    使用自定义模版的下拉菜单
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="uib-dropdown-menu" template-url="dropdown.html"
+                                    aria-labelledby="button-template-url">
+                                </ul>
+                            </div>
+
+                            <hr/>
+                            <p>
+                                <button type="button" class="btn btn-default btn-sm" ng-click="demo.fn.toggleDropdown($event)">
+                                    切换菜单弹出隐藏
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm" ng-click="disabled = !disabled">
+                                    禁用/启用
+                                </button>
+                            </p>
+
+                            <hr>
+                            <!-- Single button with keyboard nav -->
+                            <div class="btn-group" uib-dropdown uib-keyboard-nav>
+                                <button id="simple-btn-keyboard-nav" type="button" class="btn btn-primary"
+                                        uib-dropdown-toggle>
+                                    带快捷键的下拉菜单
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="uib-dropdown-menu" role="menu" aria-labelledby="simple-btn-keyboard-nav">
+                                    <li role="menuitem"><a href="#">Action</a></li>
+                                    <li role="menuitem"><a href="#">Another action</a></li>
+                                    <li role="menuitem"><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li role="menuitem"><a href="#">Separated link</a></li>
+                                </ul>
+                            </div>
+
+                            <script type="text/ng-template" id="dropdown.html">
+                                <ul class="uib-dropdown-menu" role="menu" aria-labelledby="button-template-url">
+                                    <li role="menuitem"><a href="#">Action in Template</a></li>
+                                    <li role="menuitem"><a href="#">Another action in Template</a></li>
+                                    <li role="menuitem"><a href="#">Something else here</a></li>
+                                    <li class="divider"></li>
+                                    <li role="menuitem"><a href="#">Separated link in Template</a></li>
+                                </ul>
+                            </script>
+                        </div>
+                        <div class="col-md-6">
+                            <p>
+                                你可以使用<code>is-open</code>属性或者在指令中添加 <code>&lt;a uib-dropdown-toggle&gt;</code>
+                                ，然后通过点击来显示和隐藏下拉菜单。<code>on-toggle</code>可选属性指定一个函数，当下拉菜单显示或隐藏时触发。
+                            </p>
+
+                            <p>
+                                通过在指令 <code>uib-dropdown</code>上指定 <code>dropdown-append-to-body</code>属性，可以将下拉菜单添加到body
+                                元素下。使用场景是，当下拉菜单的按钮在一个有 <code>overflow: hidden</code>属性的div中（这时候下拉菜单被hidden掉了），
+                                可以将下拉菜单添加到body下。
+                            </p>
+
+                            <p>
+                                在指令 <code>uib-dropdown</code>上添加 <code>uib-keyboard-nav</code>属性，可以开启键盘方向快捷键支持。
+                            </p>
+
+                            <p>
+                                默认的，不管点击下拉菜单本身还是下拉菜单以外的区域，下拉菜单会自动隐藏。可以通过设置 <code>auto-close</code>来改变这一行为：
+                            </p>
+
+                            <ul>
+                                <li>
+                                    <em><code>always</code>(默认)</em>
+                                    - 不管点击下拉菜单本身还是下拉菜单以外的区域，下拉菜单会自动隐藏。
+                                </li>
+
+                                <li>
+                                    <em><code>outsideClick</code></em>
+                                    - 只有点击下拉菜单元素以外区域时，才会隐藏下拉菜单。
+                                </li>
+
+                                <li>
+                                    <em><code>disabled</code></em>
+                                    - 禁止自动关闭下拉菜单。可以通过 <code>is-open</code>属性，手动控制显示或隐藏。
+                                </li>
+                            </ul>
+
+                            <p>
+                                可以使用 <code>template-url</code>属性来给下拉菜单指定模版。在通过ngRepeat指令渲染多个相似下拉菜单时很有用。
+                            </p>
+
+                            <p>例如：<code>&lt;ul class="uib-dropdown-menu" template-url="custom-dropdown.html"&gt;&lt;/ul&gt;</code></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                items: [
+                    '第一个选择~',
+                    '第二个选择。',
+                    '第二个选择！'
+                ],
+                isOpen: false
+
+            };
+            ctrl.fn = {
+                toggled: toggled,
+                toggleDropdown: toggleDropdown
+            };
+
+            function toggled (open) {
+                $log.log('Dropdown is now: ', open);
+            }
+
+            function toggleDropdown($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                ctrl.model.isopen = !ctrl.model.isopen;
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

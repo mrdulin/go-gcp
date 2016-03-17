@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>demo-1</title>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<p>
+    拦截器用来在request请求之前和response之后处理全局错误，身份验证，或者任何同步异步的操作。
+</p>
+
+<p>
+    拦截器在request请求发送给服务器端之前和response响应回来之后（但在response处理函数之前）触发。
+</p>
+
+<div ng-controller="DemoController as demo">
+{{ demo.name }}
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function() {
+        angular
+                .module('demo')
+                .config(config);
+
+        config.$inject = ['$httpProvider'];
+
+        function config($httpProvider) {
+            $httpProvider.interceptors.push('myHttpInterceptor');
+        }
+
+    })();
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$http'];
+
+        function DemoController($log, $http) {
+
+            var vm = this;
+            vm.name = '';
+
+            //拦截器在代码发送请求之后，但在真正交给服务器之前触发。
+            $http.get('../../data/request3.json').then(function(resp) {
+                //在响应函数处理之前，拦截器会首先执行，可对response做些处理
+                //然后在响应函数处理这里取得的resp就是拦截器处理过的resp
+                vm.name = resp.data.name;
+            });
+        }
+    })();
+
+
+    (function() {
+
+        angular
+                .module('demo')
+                .factory('myHttpInterceptor', myHttpInterceptor);
+
+        myHttpInterceptor.$inject = ['$q', '$log'];
+
+        function myHttpInterceptor($q, $log) {
+
+            var myHttpInterceptor = {
+                request: request,
+                requestError: requestError,
+                response: response,
+                responseError: responseError
+            };
+            return myHttpInterceptor;
+
+            //请求成功时触发
+            function request(config) {
+                $log.info(config);
+                //如果不返回config则报TypeError: Cannot read property 'headers' of undefined的错误
+                return config;
+            }
+
+            //在前一个拦截器抛出一个异常或者请求出错时触发
+            function requestError(rejection) {
+                $log.info(rejection);
+                $q.reject(rejection);
+            }
+
+            //响应成功时触发
+            function response(response) {
+                $log.info(response);
+                return response;
+            }
+
+            //在前一个拦截器抛出一个异常或者响应出错时触发
+            function responseError(rejection) {
+                $log.info(rejection);
+                $q.reject(rejection);
+            }
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

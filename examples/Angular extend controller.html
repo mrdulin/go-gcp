@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular extend controller</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body ng-controller="DemoController as vm">
+<p>origin: <span ng-bind="vm.origin"></span></p>
+<script>
+    angular.module('app', []);
+
+    //这里只是问题演示，实际中，公用的方法应该放在service中，然后通过注入的方式使用
+
+    (function() {
+        angular
+                .module('app')
+                .controller('MixinController', MixinController);
+
+        MixinController.$inject = ['$document'];
+
+        function MixinController($document) {
+
+            var self = this;
+
+            angular.extend(self, {
+                getOrigin : getOrigin
+            });
+
+            function getOrigin () {
+                return $document[0].location.origin;
+            }
+        }
+    })();
+
+    (function() {
+
+        angular
+                .module('app')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$controller', '$scope'];
+
+        function DemoController($log, $controller, $scope) {
+
+            var vm = this;
+            angular.extend(this, $controller('MixinController', {$scope: $scope}));
+
+            vm.origin = vm.getOrigin();
+        }
+    })();
+
+
+</script>
+</body>
+</html>

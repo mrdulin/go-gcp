@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $route.reload()和$window.location.reload()区别</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-route/angular-route.js"></script>
+</head>
+<body>
+
+<header>header</header>
+
+<p>
+    使用 <code>$route.reload()</code>方法重载当前路由，但是 <code>location</code>不会发生变化。
+</p>
+<p>
+    <code>ngView</code>会创建新的作用域 <code>scope</code>对象，并重新实例化当前路由的<code>controller</code>。
+</p>
+<p>
+    <code>$route.reload()</code>并不会重新实例化任何<code>service</code>。
+</p>
+
+<p>
+    <code>service</code>实例的生命周期是直到刷新页面，而不是刷新路由。
+    <code>controller</code>实例的生命周期是直到刷新路由或者刷新页面。
+</p>
+
+<div ng-view></div>
+
+<footer>footer</footer>
+
+<script>
+
+    angular.module('demo', ['ngRoute']);
+
+    (function () {
+        angular
+                .module('demo')
+                .run(run)
+                .config(config);
+
+        run.$inject = ['$rootScope'];
+
+        function run($rootScope) {
+            $rootScope.count = 0;
+        }
+
+        config.$inject = ['$routeProvider'];
+
+        function config($routeProvider) {
+
+            $routeProvider
+                .when('/', {
+                    template: '<div>' +
+                                    '数量：<strong ng-bind="demo.count"></strong> ' +
+                                    '<button class="btn btn-default" ng-click="demo.reload()">刷新路由</button>' +
+                                    '<button class="btn btn-primary" ng-click="demo.refresh()">刷新页面</button>' +
+                                    '<button class="btn btn-default" ng-click="demo.setValue()">设置service的value</button>' +
+                                    '<p>service中的value值为：' +
+                                        '<strong ng-bind="demo.value"></strong>' +
+                                    '</p>' +
+                                '</div>',
+                    controller: 'DemoController',
+                    controllerAs: 'demo',
+                    resolve: {
+                        count: ['$timeout', '$q', '$rootScope', function ($timeout, $q, $rootScope) {
+                            var deferred = $q.defer();
+                            //使用count模拟和$timeout模拟后台数据
+                            $timeout(function () {
+                                $rootScope.count++;
+                                deferred.resolve($rootScope.count);
+                            }, 2000);
+                            return deferred.promise;
+                        }]
+                    }
+                })
+                .otherwise({
+                    redirectTo: '/'
+                });
+
+        }
+    })();
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', 'count', '$route', '$window', 'DemoService'];
+
+        function DemoController($log, count, $route, $window, DemoService) {
+
+            var vm = this;
+
+            vm.count = count;
+            vm.value = DemoService.value;
+
+            vm.reload = reload;
+            vm.refresh = refresh;
+            vm.setValue = setValue;
+
+            function refresh() {
+                $window.location.reload();
+            }
+
+            function setValue() {
+                DemoService.setValue('angular');
+                vm.value = DemoService.value;
+            }
+
+            function reload() {
+                $route.reload();
+            }
+
+        }
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .service('DemoService', DemoService);
+
+        DemoService.$inject = [];
+
+        function DemoService() {
+
+            var service = this;
+            service = {
+                value: 'jquery',
+                setValue: setValue
+            };
+            return service;
+
+            function setValue(value) {
+                service.value = value;
+            }
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

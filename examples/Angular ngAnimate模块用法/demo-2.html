@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>demo-2(demo-1例子使用css3动画重写)</title>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap-theme.min.css"/>
+    <script src="../../bower_components/angular/angular.js"></script>
+    <script src="../../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <style>
+        /* 右进左出 */
+        .right-left.ng-leave {
+            animation: right-left-leave .5s ease;
+        }
+
+        @keyframes right-left-leave {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        .right-left.ng-enter {
+            animation: right-left-enter .5s ease;
+        }
+
+        @keyframes right-left-enter {
+            from {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* 左进左出 */
+        .left-left.ng-enter {
+            animation: .5s ease left-left-enter;
+        }
+
+        @keyframes left-left-enter{
+            from {
+                opacity: 0;
+                transform: translateX(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .left-left.ng-leave {
+            animation: .5s ease left-left-leave;
+        }
+        
+        @keyframes left-left-leave {
+            from {
+                transform: translateX(0);
+            }
+            to {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+        }
+
+        /* ng-move动画 */
+        .sort-item.ng-move{
+            animation: 5s ease sort-item-move;
+        }
+
+        @keyframes sort-item-move{
+            from {
+                transform: translateY(400px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes sort-item-move2{
+            from {
+                transform: translateY(-400px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .sort-item.ng-move + li{
+            animation: 5s ease sort-item-move2;
+        }
+
+    </style>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <input type="search"
+                       class="form-control"
+                       placeholder="输入搜索内容"
+                       ng-model="demo.queryString"
+                       ng-model-options="{updateOn: 'default blur', debounce: {default: 200, blur: 200}}"/>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <p>例1: <strong>右进左出</strong></p>
+
+                <ul class="list-group">
+                    <li ng-repeat="data in demo.datas | filter: demo.queryString as filterDatas"
+                        class="list-group-item right-left clearfix">
+                        <a>{{data}}</a>
+                        <button ng-click="demo.remove($index)" class="pull-right btn btn-danger">删除</button>
+                    </li>
+                </ul>
+                <p>搜索结果：{{filterDatas.length}}条数据</p>
+            </div>
+            <div class="col-md-6">
+                <p>例2: <strong>左进左出</strong></p>
+
+                <ul class="list-group">
+                    <li ng-repeat="data in demo.datas | filter: demo.queryString as filterDatas"
+                        class="list-group-item left-left clearfix">
+                        <a>{{data}}</a>
+                        <button ng-click="demo.remove($index)" class="pull-right btn btn-danger">删除</button>
+                    </li>
+                </ul>
+                <p>搜索结果：{{filterDatas.length}}条数据</p>
+            </div>
+
+            <div class="col-md-12">
+                <p>例3: <strong>ng-move排序动画</strong></p>
+
+                <ul class="list-group">
+                    <li ng-repeat="data in demo.datas | filter: demo.queryString as filterDatas"
+                        class="list-group-item sort-item clearfix">
+                        <a>{{data}}</a>
+                        <button ng-click="demo.up($index)" class="pull-right btn btn-default">上</button>
+                        <button ng-click="demo.down($index)" class="pull-right btn btn-default">下</button>
+                        <button ng-click="demo.remove($index)" class="pull-right btn btn-danger">删除</button>
+                    </li>
+                </ul>
+                <p>搜索结果：{{filterDatas.length}}条数据</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <button ng-click="demo.add()" class="btn btn-primary">增加</button>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    angular.module('demo', ['ngAnimate']);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$window'];
+
+        function DemoController($log, $window) {
+
+            var vm = this;
+
+            vm.datas = [];
+            vm.queryString = '';
+
+            vm.remove = remove;
+            vm.add = add;
+            vm.up = up;
+            vm.down = down;
+
+            setData();
+            function setData() {
+                for (var i = 0; i < 5; i++) {
+                    vm.datas.push('item' + Math.random());
+                }
+            }
+
+            function up($index) {
+                if(($index - 1) < 0) return;
+                var cur = vm.datas[$index];
+                vm.datas[$index] = vm.datas[$index - 1];
+                vm.datas[$index - 1] = cur;
+
+            }
+
+            function down($index) {
+                if(!$index + 1 > vm.datas.length) return;
+                var cur = vm.datas[$index];
+                vm.datas[$index] = vm.datas[$index + 1];
+                vm.datas[$index + 1] = cur;
+            }
+
+            function remove($index) {
+                $log.info($index);
+                vm.datas.splice($index, 1);
+            }
+
+            function add() {
+                vm.datas.push('item' + Math.random());
+            }
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

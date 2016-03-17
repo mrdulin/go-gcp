@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular ngStyle动态值用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+
+    <div ng-style="{'background-color': '{{demo.model.color}}', 'width': demo.model.width, 'height': demo.model.height}">
+
+    </div>
+
+    <button ng-click="demo.fn.close()">关闭窗口</button>
+
+    <ul>
+        <li ng-repeat="data in demo.datas" ng-bind="data.txt" ng-style="demo.fn.style(demo.model.index)"></li>
+    </ul>
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$window', '$timeout'];
+
+        function DemoController($log, $window, $timeout) {
+
+            var ctrl = this;
+            ctrl.model = {
+                index: 0,
+                color: 'red',
+                width: '100px',
+                height: '100px'
+            };
+            ctrl.datas = [
+                {
+                    txt: 'angular权威教程',
+                    id: 1
+                },
+                {
+                    txt: 'backbone应用开发',
+                    id: 2
+                },
+                {
+                    txt: 'angular权威教程',
+                    id: 3
+                }
+
+            ];
+
+            $timeout(function() {
+                ctrl.datas = [
+                    {
+                        txt: 'jquery权威指南',
+                        id: 5
+                    }
+                ];
+            }, 3000);
+
+            ctrl.fn = {
+                close: close,
+                style: style
+            };
+
+            function style($index) {
+                console.log($index);
+                return {
+                    zIndex: $index
+                }
+            }
+
+            function close() {
+                $window.close();
+            }
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

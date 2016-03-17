@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.pagination用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Pagination
+                        <small>(ui.bootstrap.pagination)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <h4>默认</h4>
+
+                            <!--1-->
+                            <uib-pagination total-items="demo.model.totalItems"
+                                            ng-model="demo.model.currentPage"
+                                            ng-change="demo.fn.pageChanged()">
+                            </uib-pagination>
+
+                            <!--2-->
+                            <uib-pagination boundary-links="true"
+                                            total-items="demo.model.totalItems"
+                                            ng-model="demo.model.currentPage"
+                                            class="pagination-sm"
+                                            previous-text="&lsaquo;"
+                                            next-text="&rsaquo;"
+                                            first-text="&laquo;"
+                                            last-text="&raquo;">
+                            </uib-pagination>
+
+                            <!--3-->
+                            <uib-pagination direction-links="false"
+                                            boundary-links="true"
+                                            total-items="demo.model.totalItems"
+                                            ng-model="demo.model.currentPage">
+                            </uib-pagination>
+
+                            <!--4-->
+                            <uib-pagination direction-links="false"
+                                            total-items="demo.model.totalItems"
+                                            ng-model="demo.model.currentPage"
+                                            num-pages="smallnumPages">
+                            </uib-pagination>
+
+                            <pre>当前页: {{demo.model.currentPage}}</pre>
+
+                            <button type="button" class="btn btn-info" ng-click="demo.fn.setPage(3)">
+                                设置为第3页
+                            </button>
+
+                            <hr/>
+                            <h4>页面 {{demo.model.currentPage}} / {{pager}}</h4>
+
+                            <uib-pager total-items="demo.model.totalItems"
+                                       ng-model="demo.model.currentPage"
+                                       num-pages="pager"
+                                       align="false">
+                            </uib-pager>
+
+                            <hr/>
+
+                            <h4>限制页数按钮的个数</h4>
+                            <uib-pagination total-items="demo.model.bigTotalItems"
+                                            ng-model="demo.model.bigCurrentPage"
+                                            max-size="demo.model.maxSize"
+                                            class="pagination-sm"
+                                            boundary-links="true">
+                            </uib-pagination>
+
+
+                            <uib-pagination total-items="demo.model.bigTotalItems"
+                                            ng-model="demo.model.bigCurrentPage"
+                                            max-size="demo.model.maxSize"
+                                            class="pagination-sm"
+                                            boundary-links="true"
+                                            rotate="false"
+                                            num-pages="numPages">
+                            </uib-pagination>
+
+                            <pre>Page: {{demo.model.bigCurrentPage}} / {{numPages}}</pre>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>分页器指令配置</h3>
+
+                            <p>
+                                以下配置项可以通过给<code>uib-pagination</code>指令添加属性的方式配置，或是通过<code>uibPaginationConfig</code>
+                                进行全局配置。
+                            </p>
+
+                            <ul>
+                                <li>
+                                    <em><code>ng-change</code></em>
+                                    : 可以配合<code>ng-model</code>使用，指定一个函数，当前页改变时(ng-model改变)触发。
+                                </li>
+                                <li>
+                                    <em><code>ng-model</code></em>
+                                    : 当前页，第1页的值就为数字1。
+                                </li>
+                                <li>
+                                    <em><code>ng-disabled</code></em>
+                                    : 设置这个属性来选择是否禁用分页。
+                                </li>
+                                <li>
+                                    <em><code>total-items</code></em>
+                                    : 所有页的总条目数。
+                                </li>
+                                <li>
+                                    <em><code>items-per-page</code>(默认值： 10)</em>
+                                    : 每一页的条目数。
+                                </li>
+                                <li>
+                                    <em><code>max-size</code>(默认值：null)</em>
+                                    : 显示分页按钮的数量。
+                                </li>
+                                <li>
+                                    <em><code>num-pages</code><strong>只读属性</strong>(默认值：angular.noop)</em>
+                                    : 总页数。
+                                </li>
+                                <li>
+                                    <em><code>rotate</code>(默认值: true)</em>
+                                    : 是否将当前页始终显示在分页按钮的中间。
+                                </li>
+                                <li>
+                                    <em><code>direction-links</code>(默认值：true)</em>
+                                    : 是否显示“下一页”和“上一页”按钮。
+                                </li>
+                                <li>
+                                    <em><code>previous-text</code>(默认值：'Previous')</em>
+                                    : “上一页”按钮的文本。
+                                </li>
+                                <li>
+                                    <em><code>next-text</code>(默认值：'Next')</em>
+                                    : “下一页”按钮的文本。
+                                </li>
+                                <li>
+                                    <em><code>boundary-links</code>(默认值：false)</em>
+                                    : 是否显示“第一页”和“最后一页”按钮
+                                </li>
+                                <li>
+                                    <em><code>first-text</code>(默认值：'First')</em>
+                                    : “第一页”按钮的文本。
+                                </li>
+                                <li>
+                                    <em><code>last-text</code>(默认值：'Last')</em>
+                                    : "最后一页"按钮的文本。
+                                </li>
+                                <li>
+                                    <em><code>template-url</code>(默认值：'template/pagination/pagination.html')</em>
+                                    : 指定自定义模版的路径。
+                                </li>
+                            </ul>
+
+                            <h3>页面分页指令配置</h3>
+
+                            <p>
+                                可以通过给<code>uib-pager</code>指令添加属性的方式配置，或者通过<code>uibPagerConfig</code>
+                                进行全局配置。
+                            </p>
+
+                            <p>
+                                <code>ng-model</code>, <code>total-items</code>, <code>items-per-page</code> 和 <code>num-pages</code>
+                                配置可以参见分页器指令配置。其他的配置如下：
+                            </p>
+
+                            <ul>
+                                <li>
+                                    <em><code>align</code>(默认值：true)</em>
+                                    : 是否将下一页，上一页按钮放在页面两端显示，如果设置为false,则按钮会在中间显示。
+                                </li>
+                                <li>
+                                    <em><code>previous-text</code>(默认值：'« Previous')</em>
+                                    : ”上一页“按钮文本。
+                                </li>
+                                <li>
+                                    <em><code>next-text</code>(默认值：'Next »')</em>
+                                    : ”下一页“按钮文本。
+                                </li>
+                                <li>
+                                    <em><code>template-url</code>(默认值：'template/pagination/pager.html')</em>
+                                    : 指定自定义模版的路径。
+                                </li>
+                                <li>
+                                    <em><code>ng-disabled</code></em>
+                                    : 是否禁用分页。
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                totalItems: 64,
+                currentPage: 4,
+                maxSize: 5,
+                bigTotalItems: 175,
+                bigCurrentPage: 1
+            };
+            ctrl.fn = {
+                setPage: setPage,
+                pageChanged: pageChanged
+            };
+
+            function setPage(pageNo) {
+                ctrl.model.currentPage = pageNo;
+            }
+
+            function pageChanged() {
+                $log.log('Page changed to: ' + ctrl.model.currentPage);
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

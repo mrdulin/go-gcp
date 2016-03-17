@@ -1,0 +1,38 @@
+{
+  "name": "learn_angular",
+  "homepage": "https://github.com/Sspeed5cm/learn_angular",
+  "authors": [
+    "dulin <novaline@qq.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "angular": "~1.4.8",
+    "angular-bootstrap": "~0.14.3",
+    "bootstrap": "~3.3.5",
+    "underscore": "~1.8.3",
+    "angular-i18n": "~1.4.8",
+    "angular-sanitize": "~1.4.8",
+    "qrcode.js": "https://github.com/davidshimjs/qrcodejs.git",
+    "angular-animate": "~1.4.8",
+    "angular-aria": "~1.4.8",
+    "angular-cookies": "~1.4.8",
+    "angular-route": "~1.4.8",
+    "ng-file-upload": "~10.1.2",
+    "angular-messages": "~1.4.8",
+    "angular-resource": "~1.4.8",
+    "angular-ui-router": "~0.2.15",
+    "angular-mocks": "~1.4.8",
+    "angular-translate": "^2.10.0"
+  }
+}

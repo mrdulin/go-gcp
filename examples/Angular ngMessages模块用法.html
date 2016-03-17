@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular ngMessages模块用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-messages/angular-messages.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <style>
+        .my-messages {
+            position: relative;
+        }
+        .my-messages.ng-active {
+            /*messages are visible*/
+            opacity: 1
+        }
+        .my-messages.ng-inactive {
+            /*messages are hidden*/
+        }
+
+        .error-message {
+            position: absolute;
+            opacity: 1;
+            transition: .3s linear all;
+            font-size: .8em;
+        }
+
+        .error-message.ng-enter {
+            opacity: 0;
+            top: -20px;
+        }
+        .error-message.ng-enter.ng-enter-active {
+            opacity: 1;
+            top: 0;
+        }
+
+        .error-message.ng-leave {
+            opacity: 1;
+            top: 0;
+        }
+        .error-message.ng-leave.ng-leave-active {
+            opacity: 0;
+            top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" ng-controller="DemoController as demo">
+    <div class="row">
+        <p class="col-md-12">
+            默认的，ngMessages指令同时只显示一个错误信息，并且按DOM的顺序依次显示。
+        </p>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <form name="myForm">
+                <!-- 基本用法 -->
+                <div class="form-group">
+                    <label>
+                        用户名：
+                        <input type="text" class="form-control" ng-model="demo.username" name="username" required minlength="5" />
+                    </label>
+                    <div ng-messages="myForm.username.$error" role="alert">
+                        <div class="text-warning" ng-message="required">用户名不能为空</div>
+                        <div class="text-warning" ng-message="minlength, maxlength">最少5个字符</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        密码：
+                        <input type="password" class="form-control" ng-model="demo.password" name="password" required minlength="8"/>
+                    </label>
+                    <div ng-messages="myForm.password.$error" role="alert">
+                        <p class="text-warning" ng-message="required">密码不能为空</p>
+                        <p class="text-warning" ng-message="minlength">密码长度最少8个字符</p>
+                    </div>
+                </div>
+
+                <!-- 同时显示多个信息的例子 -->
+                <div class="form-group">
+                    <label>
+                        邮箱：
+                        <input type="email" class="form-control" ng-model="demo.email" name="email" required minlength="8"/>
+                    </label>
+                    <div ng-messages="myForm.email.$error" ng-messages-multiple role="alert">
+                        <p class="text-warning" ng-message="required">邮箱不能为空</p>
+                        <p class="text-warning" ng-message="minlength">邮箱长度最少8个字符</p>
+                    </div>
+                </div>
+
+                <!-- 自定义提示信息模版 -->
+                <div class="form-group">
+                    <label>
+                        昵称：
+                        <input type="text" class="form-control" ng-model="demo.nickname" name="nickname" required minlength="8"/>
+                    </label>
+                    <div ng-messages="myForm.nickname.$error" role="alert">
+                        <div ng-messages-include="my-error-message"></div>
+                    </div>
+                </div>
+
+                <!-- 动态提示信息 -->
+                <div class="form-group">
+                    <label>
+                        动态提示信息：
+                        <input type="text" class="form-control" ng-model="demo.dynamic" name="dynamic" required maxlength="12" minlength="8"/>
+                    </label>
+                    <div ng-messages="myForm.dynamic.$error" role="alert">
+                        <p class="text-warning" ng-message-exp="'required'">输入不能为空</p>
+                        <p class="text-warning" ng-message-exp="['minlength', 'maxlength']">
+                            最少8个字符，最多12个字符。
+                        </p>
+                    </div>
+                </div>
+
+
+                <!-- 提示信息动画效果 -->
+                <div class="form-group">
+                    <label>
+                        提示信息动画效果：
+                        <input type="text" class="form-control" ng-model="demo.animate" name="animate" required maxlength="12" minlength="8"/>
+                    </label>
+                    <div ng-messages="myForm.animate.$error" class="my-messages" role="alert">
+                        <p class="text-warning error-message" ng-message-exp="'required'">输入不能为空</p>
+                        <p class="text-warning error-message" ng-message-exp="['minlength', 'maxlength']">
+                            最少8个字符，最多12个字符。
+                        </p>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script id="my-error-message" type="text/ng-template">
+    <p class="text-warning" ng-message="required">昵称不能为空</p>
+    <p class="text-warning" ng-message="minlength">昵称长度最少8个字符</p>
+</script>
+<script>
+
+    angular.module('demo', ['ngMessages', 'ngAnimate']);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+
+            ctrl.username = '';
+            ctrl.password = '';
+            ctrl.email = '';
+            ctrl.dynamic = '';
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $cacheFactory缓存请求</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+
+    <p>请求使用了$cacheFactory缓存，重复点击请求按钮，network中可以看到，只有最初发的一个请求。</p>
+
+    <p>并且，需要注意，$cacheFactory构造的缓存，只在当前会话(session)可用</p>
+
+    <ul>
+        <li ng-repeat="data in demo.model.datas" ng-bind="data.name"></li>
+    </ul>
+
+    <button ng-click="demo.fn.requestHandler()">请求数据</button>
+
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$http', '$cacheFactory', '$q'];
+
+        function DemoController($log, $http, $cacheFactory, $q) {
+
+            var ctrl = this;
+            ctrl.model = {
+                datas: [],
+                cache: null
+            };
+            ctrl.fn = {
+                request: request,
+                requestHandler: requestHandler
+            };
+
+            ctrl.model.cache = $cacheFactory('demoCache');
+
+            function requestHandler() {
+
+                var promise =  ctrl.fn.request();
+
+                promise.then(function (rep) {
+
+                    $log.info(ctrl.model.cache.info());
+
+                    var data = rep.config ? rep.data : rep;
+
+                    ctrl.model.datas.push(data);
+
+                });
+            }
+
+            function request() {
+                $log.info('request handler');
+                var cacheResponse = ctrl.model.cache.get('../data/request1.json');
+
+                if(cacheResponse) {
+                    var cacheData = angular.fromJson(cacheResponse[1]);
+                    return $q.when(cacheData);
+                }
+
+                if(!cacheResponse) {
+                    return $http({
+                        method: 'GET',
+                        url: '../data/request1.json',
+                        cache: ctrl.model.cache
+                    });
+                }
+            }
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

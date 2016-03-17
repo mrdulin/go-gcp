@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular 指令compile, pre-link, post-link, controller顺序.html</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <style>
+        div {
+            padding: 5px;
+            margin: 5px;
+            background-color: #EEE;
+            border: 1px solid #BBB;
+        }
+
+        div > div {
+            background-color: #DDD;
+        }
+
+        div > div > div {
+            background-color: #CCC;
+        }
+
+        ol {
+            list-style: decimal;
+            margin-left: 30px;
+        }
+    </style>
+</head>
+<body>
+<div log-compile="parent">
+    <div log-compile="..child 1">
+        <div log-compile="....child 1 a"></div>
+        <div log-compile="....child 1 b"></div>
+    </div>
+    <div log-compile="..child 2">
+        <div log-compile="....child 2 a"></div>
+        <div log-compile="....child 2 b"></div>
+    </div>
+</div>
+
+<pre>{{log}}</pre>
+<script>
+    angular.module('demo', [])
+
+            .directive('logCompile', function ($rootScope) {
+                $rootScope.log = "";
+
+                return {
+                    controller: function ($scope, $attrs) {
+                        $rootScope.log = $rootScope.log + ($attrs.logCompile + ' (controller)\n');
+                    },
+                    compile: function compile(element, attributes) {
+                        $rootScope.log = $rootScope.log + (attributes.logCompile + ' (compile)\n');
+                        return {
+                            pre: function preLink(scope, element, attributes) {
+                                $rootScope.log = $rootScope.log + (attributes.logCompile + ' (pre-link)\n');
+                            },
+                            post: function postLink(scope, element, attributes) {
+                                element.prepend(attributes.logCompile);
+                                $rootScope.log = $rootScope.log + (attributes.logCompile + ' (post-link)\n');
+                            }
+                        };
+                    }
+                };
+            })
+
+            .directive('terminate', function () {
+                return {
+                    terminal: true
+                };
+            });
+</script>
+</body>
+</html>

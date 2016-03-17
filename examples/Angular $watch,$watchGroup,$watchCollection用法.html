@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $watch研究</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    <p>姓名：<span ng-bind="demo.model.name"></span></p>
+    <p>年龄：<span ng-bind="demo.model.age"></span></p>
+    <p>日期：<span ng-bind="demo.date"></span></p>
+
+    <hr/>
+    <h3>web技术：</h3>
+    <p>js框架：<span ng-bind="demo.js"></span></p>
+    <p>css框架：<span ng-bind="demo.cssLib"></span></p>
+    <p>标记语言：<span ng-bind="demo.markup.name"></span></p>
+
+    <hr/>
+    <h3>游戏：</h3>
+    <p>名字：<span ng-bind="demo.gameObj.name"></span></p>
+    <p>appId：<span ng-bind="demo.gameObj.appId"></span></p>
+
+    <hr/>
+    <p><span ng-bind="demo.beerName"></span>&nbsp;is&nbsp;<span ng-bind="demo.feeling"></span></p>
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$timeout', '$scope'];
+
+        function DemoController($log, $timeout, $scope) {
+
+            var ctrl = this;
+
+            ctrl.model = {
+                name: 'novaline',
+                age: 23
+            };
+
+            ctrl.date = '2015-01-01';
+
+            //$watch一个引用类型，此处是Object类型
+            //注意：如果$watch方法的第三个参数为true，当demo.model中的一个字段的值改变，虽然demo.model的引用没变，但也会触发$watch回调函数
+            //因为第三个参数设置为true时，$watch表达式不会使用!==来判断前后两次表达式是否相等（值或引用是否相等），而是通过angular.equals方法来判断。
+            $scope.$watch('demo.model', function(newModel) {
+                $log.info('newModel: ' +  angular.toJson(newModel));
+            }, false);
+
+            $scope.$watch('demo.date', function(newDate) {
+                $log.info('newDate: ' + newDate);
+            }, false);
+
+            setName();
+
+            //当改变Object中某个字段的值时，并不会再次触发$watch，因为引用类型的指针并没有发生变化
+            function setName() {
+                $timeout(function() {
+                    ctrl.model.name = 'dul';
+                }, 2000);
+            }
+
+
+            setModel();
+
+            //当重新给ctrl.model赋值一个新的对象，即新的引用指针，会再次触发$watch
+            function setModel() {
+                $timeout(function() {
+                    ctrl.model = {
+                        name: 'Toki Toki',
+                        age: 2
+                    };
+                }, 4000);
+            }
+
+
+            setDate();
+
+            //$watch基本类型时，只要基本类型的值变化，就会触发$watch的回调函数
+            function setDate() {
+                $timeout(function() {
+                    ctrl.date = '2015/01/01';
+                }, 2000);
+            }
+
+            //结论：
+            //当$watch方法的第三个可选参数([objectEquality])不为true时
+            //$watchExpression，即$watch的表达式通过!==来判断前后两次表达式的值或引用是否相等
+            //$watch引用类型时，只有当引用（指针）变化时，才会触发$watch回调函数;
+            //$watch基本类型时，只要基本类型的值变化，就会触发$watch的回调函数
+
+
+            //当$watch方法的第三个可选参数([objectEquality])为true时
+            //$watchExpression，即$watch的表达式通过angular.equals方法来判断前后两次表达式的值或引用是否相等
+            //举个例子：对于ctrl.model对象，angular.equals会判断引用类型的引用（指针）和内部的所有字段，如果都相同，那么就判断为两个对象相等
+            //否则，虽然$watch的ctrl.model的引用（指针）没有变化，但ctrl.model.name改变了，angular.equals就会判断这两个对象不相同，就会触发$watch的回调函数
+
+
+
+            /*--------------------------------------------------------------------------------------------------------*/
+            ctrl.js = 'angular';
+            ctrl.cssLib = 'SASS';
+            ctrl.getCssLib = function() {
+                return ctrl.cssLib;
+            };
+            ctrl.markup = {
+                name: 'html'
+            };
+
+            //使用$watchGroup监听基本类型(demo.js)，引用类型:函数(ctrl.getCssLib)和对象(demo.markup)
+            $scope.$watchGroup(['demo.js', ctrl.getCssLib, 'demo.markup'], function(newValues, oldValues) {
+                $log.info('oldValues: ' + angular.toJson(oldValues) + ';' + 'type: ' + typeof(oldValues));
+                $log.info('newValues: ' + angular.toJson(newValues) + ';' + 'type: ' + typeof(newValues));
+            });
+
+//            setWebTech();
+
+            function setWebTech() {
+                $timeout(function() {
+                    ctrl.js = 'backbone';
+                    ctrl.cssLib = 'LESS'
+                    ctrl.markup.name = 'Jade';
+                }, 2000);
+            }
+
+            setMarkupName();
+
+            //测试$watchGroup，仅改变引用类型（demo.markup）的name字段的值，不改变引用指针时，是否会触发$watchGroup的回调函数
+            //结果：没有再次触发$watchGroup的回调函数，而$watchGroup没有类似$watch的第三个参数
+            function setMarkupName(){
+                $timeout(function() {
+                    $log.info('setMarkupName');
+                    ctrl.markup.name = 'Jade';
+                }, 2000);
+            }
+
+
+            /*--------------------------------------------------------------------------------------------------------*/
+            //如果要监听一个引用类型，这里用Object类型举例，如果当Object中某个属性的值改变就触发回调函数，需要使用$watchCollection方法
+
+            ctrl.gameObj = {
+                name: 'CS:GO',
+                appId: '730'
+            };
+            $scope.$watchCollection('demo.gameObj', function(newGameObj, oldGameObj) {
+                $log.log('newGameObj ' + angular.toJson(newGameObj));
+                $log.log('oldGameObj ' + angular.toJson(oldGameObj));
+            });
+
+            setGameName();
+
+            function setGameName() {
+                $timeout(function() {
+                    ctrl.gameObj.name = 'GTA5';
+                }, 2000);
+            }
+
+
+            /*--------------------------------------------------------------------------------------------------------*/
+            //当需要同时监听两个或多个基本类型的数据，当任何一个变化后需要触发回调函数，可以使用下面这种方法
+
+            ctrl.beerName = 'QingDao bear';
+            ctrl.feeling = 'good';
+
+            $scope.$watch('demo.beerName + demo.feeling', function(newValue, oldValue) {
+                $log.log('newValue ' + angular.toJson(newValue));
+                $log.log('oldValue ' + angular.toJson(oldValue));
+            });
+
+            setFeeling();
+
+            function setFeeling() {
+                $timeout(function () {
+                    ctrl.feeling = 'bad';
+                }, 2000);
+            }
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

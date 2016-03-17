@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $interval用法及注意事项</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+<p>
+    $interval创建的定时器，在controller的作用域或者指令的根元素销毁时，并不会被一同销毁。
+    所以，需要在合适的时刻手动销毁。
+</p>
+<div ng-controller="DemoController as demo">
+
+    <button ng-click="demo.fn.start()">开始计数</button>
+    <button ng-click="demo.fn.stop()">停止计数</button>
+    <button ng-click="demo.fn.reset()">重置</button>
+
+    {{ demo.model.data }}
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$interval', '$scope'];
+
+        function DemoController($log, $interval, $scope) {
+
+            var ctrl = this;
+            var interval;
+
+            ctrl.model = {
+                data: 1
+            };
+            ctrl.fn = {
+                start: start,
+                stop: stop,
+                reset: reset
+            };
+
+            function start() {
+                var count = 300,
+                    delay = 1000,
+                    invokeApply = true,
+                    passParams = 1;
+
+                if(interval) return;
+
+                //注意，此处如果用angular.isDefined检查null值，返回true。
+//                if(angular.isDefined(interval)) return;
+
+                //count，执行的次数
+                //delay，延时毫秒数
+                //invokeApply, 默认为true。是否跳过脏值检查，设置为false，则跳过
+                //passParams，执行函数额外的参数
+                interval = $interval(function(params) {
+                    ctrl.model.data += params;
+                }, delay, count, invokeApply, passParams);
+            }
+
+            function stop() {
+                if(angular.isDefined(interval)) {
+                    $interval.cancel(interval);
+                    interval = null;
+                }
+            }
+
+            function reset() {
+                ctrl.model.data = 1;
+            }
+
+            //监听controller的$scope的$destroy事件，在此手动销毁定时器。
+            $scope.$on('$destroy', function() {
+                ctrl.fn.stop();
+            });
+
+            //如果是在directive中，则通过link函数的element监听$destroy事件，再调用销毁定时器函数。
+//            element.$on('$destroy', function() {
+//                ctrl.fn.stop();
+//            });
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

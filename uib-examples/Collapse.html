@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.collapse用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Collapse
+                        <small>(ui.bootstrap.collapse)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <button type="button"
+                                    class="btn btn-default"
+                                    ng-click="demo.model.isCollapsed = !demo.model.isCollapsed">
+                                切换折叠
+                            </button>
+                            <hr>
+                            <div uib-collapse="demo.model.isCollapsed">
+                                <div class="well well-lg">一些内容</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p><code>uib-collapse</code>指令提供一个简单的方法，使用css transition来隐藏和显示一个元素</p>
+                            <h3>uib-collapse配置</h3>
+                            <ul>
+                                <li>
+                                    <em><code>uib-collapse</code>(默认值：<code>false</code>)</em>
+                                    - false展开，true折叠
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                isCollapsed: false
+            };
+            ctrl.fn = {
+            };
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

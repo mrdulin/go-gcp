@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.accordion用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="accordion">
+                <div class="page-header">
+                    <h1>
+                        Accordion
+                        <small>(ui.bootstrap.accordion)</small>
+                    </h1>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div ng-controller="DemoController as demo">
+                            <script type="text/ng-template" id="group-template.html">
+                                <div class="panel {{panelClass || 'panel-default'}}">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title" style="color:#fa39c3">
+                                            <a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()"
+                                               uib-accordion-transclude="heading">
+                                                <span ng-class="{'text-muted': isDisabled}">{{heading}}</span>
+                                            </a>
+                                        </h4>
+                                    </div>
+                                    <div class="panel-collapse collapse" uib-collapse="!isOpen">
+                                        这里是自定义模版自己的内容，下面是transclude的内容
+                                        <div class="panel-body" ng-transclude></div>
+                                    </div>
+                                </div>
+                            </script>
+
+                            <p>
+                                <button type="button" class="btn btn-default btn-sm"
+                                        ng-click="demo.model.open = !demo.model.open">
+                                    切换显示最后一个accordion
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm"
+                                        ng-click="demo.model.isFirstDisabled = ! demo.model.isFirstDisabled">
+                                    禁用/启用第一个accordion
+                                </button>
+                            </p>
+
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="demo.model.oneAtATime">
+                                    只能同时展开一个accordion
+                                </label>
+                            </div>
+
+                            <uib-accordion close-others="demo.model.oneAtATime">
+                                <!--1-->
+                                <uib-accordion-group heading="静态头部文字"
+                                                     is-open="demo.model.isFirstOpen"
+                                                     is-disabled="demo.model.isFirstDisabled">
+                                    这里可以直接写模版html
+                                </uib-accordion-group>
+
+                                <!--2-->
+                                <uib-accordion-group heading="{{group.title}}" ng-repeat="group in demo.model.groups">
+                                    {{group.content}}
+                                </uib-accordion-group>
+
+                                <!--3-->
+                                <uib-accordion-group heading="动态内容" panel-class="panel-primary">
+                                    <p>accordion会根据内容的增加自适应</p>
+                                    <button type="button" class="btn btn-default btn-sm" ng-click="demo.fn.addItem()">增加
+                                    </button>
+                                    <div ng-repeat="item in demo.model.items">{{item}}</div>
+                                </uib-accordion-group>
+
+                                <!--4-->
+                                <uib-accordion-group heading="自定义内容模版" template-url="group-template.html">
+                                    这里的内容会被transclude
+                                </uib-accordion-group>
+
+                                <!--5-->
+                                <uib-accordion-group heading="Delete account" panel-class="panel-danger">
+                                    <p>点击下面的按钮，删除账户</p>
+                                    <button class="btn btn-danger">Delete</button>
+                                </uib-accordion-group>
+
+                                <!--6-->
+                                <uib-accordion-group is-open="demo.model.open">
+                                    <uib-accordion-heading>
+                                        也可以通过uib-accordion-heading来设置标题
+                                        <i class="pull-right glyphicon"
+                                           ng-class="{'glyphicon-chevron-down': demo.model.open, 'glyphicon-chevron-right': !demo.model.open}"></i>
+                                    </uib-accordion-heading>
+                                    This is just some content to illustrate fancy headings.
+                                </uib-accordion-group>
+                            </uib-accordion>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>uib-accordion指令配置</h3>
+                        <ul>
+                            <li>
+                                <em><code>close-others</code>(默认值：<code>true</code>)</em> - 控制是否在展开一个条目时，折叠其他条目
+                            </li>
+                            <li>
+                                <em><code>template-url</code>(默认值：<code>template/accordion/accordion.html</code>)</em>
+                                - 自定义uib-accordion模版的路径，指定自定义模版将覆盖原始的指令模版
+                            </li>
+                        </ul>
+                        <h3>uib-accordion-group指令配置</h3>
+                        <ul>
+                            <li>
+                                <em><code>is-disabled</code>(默认值：<code>false</code>)</em> - 是否禁用
+                            </li>
+                            <li>
+                                <em><code>is-open</code>(默认值：<code>false</code>)</em> - true为展开，false为折叠
+                            </li>
+                            <li>
+                                <em><code>heading</code>(默认值：<code>无</code>)</em> -
+                                条目的title，需要设置一下title，因为折叠和展开都是点击的title
+                            </li>
+                            <li>
+                                <em><code>panel-class</code>(默认值：<code>panel-default</code>)</em>
+                                - 添加这个属性，可以设置Bootstrap的panel的class，例如(panel-primary, panel-success, panel-info等等)，
+                                也可以自定义。必须是字符串。
+                            </li>
+                            <li>
+                                <em><code>template-url</code>(默认值：<code>template/accordion/accordion-group.html</code>)</em>
+                                - 自定义accordion-group模版的路径
+                            </li>
+                        </ul>
+                        <h3>
+                            默认配置
+                            <small><code>uibAccordionConfig</code></small>
+                        </h3>
+                        <ul>
+                            <li>
+                                <em><code>closeOthers</code>(默认值：<code>true</code>)</em>
+                                - 控制是否在展开一个条目时，折叠其他条目。<code>uibAccordionConfig</code>这是一个<code>Constant</code>。
+                                只需要注入，并修改即可。
+                            </li>
+                        </ul>
+                        <h3>Accordion的heading</h3>
+                        <p>
+                            除了在 <code>uib-accordion-group</code>指令上使用 <code>heading</code>属性来指定title，
+                            也可以在<code>uib-accordion-group</code>指令内部使用<code>uib-accordion-heading</code>指令来包含一些头部元素
+                        </p>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                oneAtATime: false,
+                isFirstOpen: true,
+                isFirstDisabled: false,
+                isCustomDisabled: false,
+                groups: [
+                    {
+                        title: '动态标题 - 1',
+                        content: '动态内容 - 1'
+                    },
+                    {
+                        title: '动态标题 - 2',
+                        content: '动态内容 - 2'
+                    }
+                ],
+                items: ['Item 1', 'Item 2', 'Item 3']
+            };
+            ctrl.fn = {
+                addItem: addItem
+            };
+
+            function addItem() {
+                var newNum = ctrl.model.items.length + 1;
+                ctrl.model.items.push('Item' + ' ' + newNum);
+            }
+        }
+    })();
+</script>
+</body>
+</html>
+
+

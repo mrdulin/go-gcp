@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular 使用$sce服务或者ngSanitize模块在视图中插入服务器端返回的html标签</title>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+</head>
+<body  ng-controller="DemoController as demo">
+
+<div>
+    <strong>几点注意：</strong>
+    <p>使用$sce对不可信的html进行处理，可以防止跨站脚本攻击</p>
+    <p>ng-bind-html-unsafe指令在angular 1.2中被移除了</p>
+
+    <div ng-bind-html="demo.model.safeHtml"></div>
+
+    <!-- Error: [$sce:unsafe] Attempting to use an unsafe value in a safe context. -->
+    <!-- 或者加入ngSanitize模块，下面的就可以正常显示了 -->
+    <div ng-bind-html="demo.model.unsafeHtml">
+
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ngSanitize'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', 'DemoService'];
+
+        function DemoController($log, DemoService) {
+
+            var ctrl = this;
+            ctrl.model = {
+                safeHtml: '',
+                unsafeHtml: '',
+                script: ''
+            };
+
+            ctrl.fn = {
+                request: request
+            };
+
+            ctrl.fn.request();
+
+            function request() {
+                DemoService
+                        .requestData()
+                        .then(function (data) {
+                            ctrl.model.safeHtml = data.safeHtml;
+                            ctrl.model.unsafeHtml = data.unsafeHtml;
+                            ctrl.model.script = data.safeScript;
+                        }).catch(function(reason) {
+                            alert(reason);
+                        });
+            }
+
+        }
+    })();
+
+
+    (function () {
+        angular
+                .module('demo')
+                .service('DemoService', DemoService);
+
+        DemoService.$inject = ['$http', '$sce', '$q'];
+
+        function DemoService($http, $sce, $q) {
+
+            var service = this;
+
+            service = {
+                requestData: requestData
+            };
+
+            return service;
+
+            function requestData() {
+                var deferred = $q.defer();
+
+                $http.post('../data/tpl.json').success(function (data) {
+                    var safeHtml = $sce.trustAsHtml(data.tpl);
+                    deferred.resolve({
+                        unsafeHtml: data.tpl,
+                        safeHtml: safeHtml
+                    });
+                }).error(function (error) {
+                    deferred.reject(error);
+                });
+
+                return deferred.promise;
+            }
+        }
+    })()
+</script>
+</body>
+</html>
+
+

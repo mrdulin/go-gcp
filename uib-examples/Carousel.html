@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.carousel用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Carousel
+                        <small>(ui.bootstrap.carousel)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <div style="height: 305px">
+                                <uib-carousel interval="demo.model.myInterval" no-wrap="demo.model.noWrapSlides">
+                                    <uib-slide ng-repeat="slide in demo.model.slides" active="slide.active">
+                                        <img ng-src="{{slide.image}}" style="margin:auto;">
+
+                                        <div class="carousel-caption">
+                                            <h4>Slide {{$index}}</h4>
+
+                                            <p>{{slide.text}}</p>
+                                        </div>
+                                    </uib-slide>
+                                </uib-carousel>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-info" ng-click="demo.fn.addSlide()">Add Slide
+                                    </button>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" ng-model="demo.model.noWrapSlides">
+                                            禁止轮播自动循环
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    轮播播放时间间隔(ms):
+                                    <input type="number" class="form-control" ng-model="demo.model.myInterval">
+                                    <br/>如果间隔为0ms，则停止轮播循环。
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p>支持触摸屏设备，触摸事件。依赖<code>ngTouch</code>模块。</p>
+
+                            <p>current-index变量将会在当前显示的slide的指令中可用。</p>
+
+                            <p>在<code>uib-carousel</code>指令上使用<code>no-wrap</code>控制轮播的是否循环。真值则阻止自动循环。</p>
+
+                            <p>
+                                在<code>uib-carousel</code>指令，或者<code>uib-slide</code>指令上使用<code>template-url</code>，
+                                用来指定自定义模版的路径。
+                            </p>
+
+                            <p>
+                                在<code>uib-slide</code>指令上，可以使用<code>actual</code>属性给slide的<code>$scope</code>对象绑定一些数据，
+                                这样可以对轮播的进行一些自定义设置。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                myInterval: 5000,
+                noWrapSlides: false,
+                slides: []
+            };
+            ctrl.fn = {
+                addSlide: addSlide
+            };
+
+            function addSlide() {
+                //不同宽度生成不同的图片
+                var newWidth = 600 + ctrl.model.slides.length + 1;
+                ctrl.model.slides.push({
+                    image: 'https://unsplash.it/' + newWidth + '/300',
+                    text: ['More', 'Extra', 'Lots of', 'Surplus'][ctrl.model.slides.length % 4] + ' ' +
+                    ['Cats', 'Kittys', 'Felines', 'Cutes'][ctrl.model.slides.length % 4]
+                });
+            }
+
+            for (var i = 0; i < 4; i++) {
+                ctrl.fn.addSlide();
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

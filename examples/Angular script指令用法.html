@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular script指令用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body ng-controller="DemoController as demo">
+
+<p>Angular会将script标签中的内容加载进<code>$templateCache</code>，模版名称就是script标签的id</p>
+<p>这样，<code>ngInclude</code>，<code>ngView</code>或是其他指令就可以通过模版名称取到这个模版，直接使用它</p>
+<p>script标签的type必须是text/ng-template，模版名称是id，其他指令的templateUrl就可以通过模版id使用script标签中的模版</p>
+
+<p>ngInclude使用模版：</p>
+<div ng-include="'demoTpl.html'">
+
+</div>
+
+<p>自定义指令使用模版：</p>
+<demo-directive></demo-directive>
+
+<script type="text/ng-template" id="demoTpl.html">
+    <div>
+        <p>通过script指令定义模版，其他指令通过templateUrl使用</p>
+    </div>
+</script>
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+            };
+            ctrl.fn = {
+            };
+        }
+    })();
+
+    (function () {
+        angular
+                .module('demo')
+                .directive('demoDirective', demoDirective);
+
+        demoDirective.$inject = ['$log'];
+
+        function demoDirective($log) {
+
+            return {
+                templateUrl: 'demoTpl.html',
+                replace: true
+            };
+        }
+    })();
+</script>
+</body>
+</html>
+
+

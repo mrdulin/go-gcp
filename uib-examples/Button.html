@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.buttons用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Buttons
+                        <small>(ui.bootstrap.buttons)</small>
+                    </h1>
+                </div>
+                <div class="row">
+                    <div ng-controller="DemoController as demo">
+                        <div class="col-md-6">
+                            <h4>单个按钮状态切换</h4>
+                            <pre>{{demo.model.singleModel}}</pre>
+                            <button type="button" class="btn btn-primary"
+                                    ng-model="demo.model.singleModel"
+                                    uib-btn-checkbox
+                                    btn-checkbox-true="1" btn-checkbox-false="0">
+                                单个按钮状态切换
+                            </button>
+                            <h4>多选按钮</h4>
+                            <pre>数据模型: {{demo.model.checkModel}}</pre>
+                            <pre>结果: {{demo.model.checkResults}}</pre>
+                            <div class="btn-group">
+                                <label class="btn btn-primary" ng-model="demo.model.checkModel.left"
+                                       uib-btn-checkbox>Left</label>
+                                <label class="btn btn-primary" ng-model="demo.model.checkModel.middle"
+                                       uib-btn-checkbox>Middle</label>
+                                <label class="btn btn-primary" ng-model="demo.model.checkModel.right"
+                                       uib-btn-checkbox>Right</label>
+                            </div>
+                            <h4>单选按钮、不可取消选择的单选</h4>
+                            <pre>{{demo.model.radioModel || 'null'}}</pre>
+                            <div class="btn-group">
+                                <label class="btn btn-primary" ng-model="demo.model.radioModel"
+                                       uib-btn-radio="'Left'">Left</label>
+                                <label class="btn btn-primary" ng-model="demo.model.radioModel"
+                                       uib-btn-radio="'Middle'">Middle</label>
+                                <label class="btn btn-primary" ng-model="demo.model.radioModel"
+                                       uib-btn-radio="'Right'">Right</label>
+                            </div>
+                            <div class="btn-group">
+                                <label class="btn btn-success" ng-model="demo.model.radioModel" uib-btn-radio="'Left'"
+                                       uncheckable>Left</label>
+                                <label class="btn btn-success" ng-model="demo.model.radioModel" uib-btn-radio="'Middle'"
+                                       uncheckable>Middle</label>
+                                <label class="btn btn-success" ng-model="demo.model.radioModel" uib-btn-radio="'Right'"
+                                       uncheckable>Right</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3>uib-btn-checkbox配置</h3>
+                            <ul>
+                                <li>
+                                    <em><code>ng-model</code></em>
+                                    - 多选按钮的状态模型。<code>true</code>或者<code>false</code>。
+                                </li>
+                                <li>
+                                    <em><code>btn-checkbox-true</code>(默认值：<code>true</code>)</em>
+                                    - 将该属性对应的值设置给checked状态的多选按钮。
+                                </li>
+                                <li>
+                                    <em><code>btn-checkbox-false</code>(默认值：<code>false</code>)</em>
+                                    - 将该属性对应的值设置给unchecked状态的多选按钮。
+                                </li>
+                            </ul>
+                            <h3>uib-btn-radio配置</h3>
+                            <ul>
+                                <li>
+                                    <em><code>uib-btn-radio</code></em>
+                                    - 将该属性对应的值设置给check状态的单选按钮。
+                                </li>
+                                <li>
+                                    <em><code>ng-model</code></em>
+                                    - 单选按钮的状态模型。在一个按钮组内，所有的单选按钮的状态模型必须使用同一个。
+                                </li>
+                                <li>
+                                    <em><code>uncheckable</code>(布尔属性)</em>
+                                    - 加了该属性，则再次点击单选按钮可以变成unchecked状态，反之不能便能unchecked状态
+                                </li>
+                            </ul>
+                            <h3>
+                                默认配置
+                                <small><code>uibButtonConfig</code></small>
+                            </h3>
+                            <ul>
+                                <li>
+                                    <em><code>activeClass</code>(默认值：<code>active</code>)</em>
+                                    - 添加在checked状态按钮上的class。
+                                </li>
+                                <li>
+                                    <em><code>toggleEvent</code>(默认值：<code>click</code>)</em>
+                                    - 设置转换按钮状态的事件。
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$scope', 'uibButtonConfig'];
+
+        function DemoController($log, $scope, uibButtonConfig) {
+
+            var ctrl = this;
+
+            uibButtonConfig.toggleEvent = 'mouseover';
+
+            ctrl.model = {
+                singleModel: 1,
+                checkModel: {
+                    left: false,
+                    middle: true,
+                    right: false
+                },
+                checkResults: [],
+                radioModel: 'Middle'
+            };
+            ctrl.fn = {};
+
+            $scope.$watchCollection('demo.model.checkModel', function () {
+                ctrl.model.checkResults = [];
+                angular.forEach(ctrl.model.checkModel, function (value, key) {
+                    if (value) {
+                        ctrl.model.checkResults.push(key);
+                    }
+                });
+            });
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

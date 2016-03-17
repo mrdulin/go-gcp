@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular 使用Controller as语法时，$watch的用法</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body ng-controller="DemoController as DemoCtrl">
+
+<input type="text" ng-model="DemoCtrl.model.name"/>
+
+<script>
+
+    angular.module('demo', []);
+
+    angular
+            .module('demo')
+            .controller('DemoController', DemoController);
+
+    DemoController.$inject = ['$scope', '$log'];
+
+    function DemoController($scope, $log) {
+
+        var ctrl = this;
+        ctrl.model = {};
+        ctrl.fn = {};
+
+        ctrl.model.name = '';
+
+        $scope.$watch('DemoCtrl.model.name', function (newVal, oldVal, scope) {
+            $log.info(newVal, oldVal, scope);
+        }, true);
+
+    }
+</script>
+</body>
+</html>

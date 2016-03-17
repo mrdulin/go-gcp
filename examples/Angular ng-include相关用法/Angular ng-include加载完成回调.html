@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular ng-include加载完成回调</title>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../../bower_components/angular/angular.js"></script>
+</head>
+<body ng-controller="DemoController as vm">
+<!--使用data-onload来判断include的模版是否加载完成-->
+<div ng-include="'./templates/' + vm.tplName + '.tpl.html'" data-onload="vm.bookListLoadComplete()"></div>
+
+<button ng-click="vm.loadGameTpl()">加载游戏列表</button>
+<button ng-click="vm.loadNotExistTpl()">加载不存在的模版</button>
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log','$scope', '$timeout'];
+
+        function DemoController($log, $scope, $timeout) {
+
+            var vm = this;
+
+            vm.tplName = 'bookList';
+            vm.bookListLoadComplete = bookListLoadComplete;
+            vm.loadGameTpl = loadGameTpl;
+            vm.loadNotExistTpl = loadNotExistTpl;
+            vm.bookMap = {
+                'angular': 'angular权威教程',
+                'jquery': '锋利的jQuery',
+                'javascript': 'javascript权威指南'
+            };
+            vm.gameMap = {
+                'cs:go': 'cs:go是个好游戏',
+                'GTA4': '暴力游戏GTA4'
+            };
+
+            $log.info('实例化controller');
+            function bookListLoadComplete() {
+                $log.info('include模版加载完成');
+            }
+
+            function loadGameTpl() {
+                $timeout(function() {
+                    vm.tplName = 'gameList';
+                }, 3000);
+            }
+
+            function loadNotExistTpl() {
+                $timeout(function() {
+                    vm.tplName = 'notExistName';
+                }, 3000);
+            }
+
+            //每次请求新的include模版时触发
+            $scope.$on('$includeContentRequested', function(e, src) {
+                $log.info('开始请求include模版', e, 'url:', src);
+            });
+
+            //每次加载新的include模版时触发
+            $scope.$on('$includeContentLoaded', function(e, src) {
+                $log.info('include模版reload', e, 'url:', src);
+            });
+
+            //当请求模版时，如果响应的状态码status < 200 || status > 299时触发
+            //例如，请求的模版地址不存在就会触发
+            $scope.$on('$includeContentError', function(e, src) {
+                $log.info('include模版出错', e, 'url:', src);
+            });
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

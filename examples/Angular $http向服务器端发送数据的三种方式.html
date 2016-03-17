@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $http向服务器端发送数据的三种方式</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    {{ demo.model.data }}
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$http', '$httpParamSerializer'];
+
+        function DemoController($log, $http, $httpParamSerializer) {
+
+            var ctrl = this;
+            ctrl.model = {
+                data: ''
+            };
+
+            ctrl.fn = {};
+
+            var data = {
+                "name": "angular",
+                "type": "js",
+                "id": 1,
+                "list": [
+                    {
+                        "id": 1,
+                        "name": "http"
+                    },
+                    {
+                        "id": 2,
+                        "name": "request"
+                    }
+                ]
+            };
+
+            var url = '../data/request1.json';
+
+            //example.1
+            //data被$httpParamSerializer服务序列化为查询字符串并添加到了请求地址后,该例子最终的Request URL为
+            //http://localhost:63342/learn_angular/data/request1.json?id=1&name=angular&type=js
+            //并且，查询字符串字段的顺序按字母排序
+            $http({
+                method: 'POST',
+                url: url,
+                params: data
+            }).success(function (data) {
+                ctrl.model.data = data.name;
+            });
+
+            //example.2
+            //data通过Request Payload发送给服务器端，Request URL为
+            //http://localhost:63342/learn_angular/data/request1.json
+            //Request Headers中Content-Type为application/json;charset=UTF-8
+            $http({
+                method: 'POST',
+                url: url,
+                data: data
+            }).success(function (data) {
+                ctrl.model.data = data.name;
+            });
+
+
+            //example.3
+            //data通过Form data发送给服务器端，Request URL为
+            //http://localhost:63342/learn_angular/data/request1.json
+            //Request Headers中Content-Type为application/x-www-form-urlencoded
+            var serializerData = $httpParamSerializer(data);
+            console.log(serializerData);
+
+            $http({
+                method: 'POST',
+                url: url,
+                data: serializerData,
+                headers: {
+                    "Content-Type":  "application/x-www-form-urlencoded; charset=UTF-8"
+                }
+            }).success(function (data) {
+                ctrl.model.data = data.name;
+            });
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

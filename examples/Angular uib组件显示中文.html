@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular uib组件显示中文</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    <p>需要引入 <a href="https://github.com/angular/angular.js/blob/master/src/ngLocale/angular-locale_zh-cn.js">angular-locale_zh-cn</a></p>
+    <div style="display:inline-block; min-height:290px;">
+        <uib-datepicker ng-model="demo.model.dt" show-weeks="true" class="well well-sm"></uib-datepicker>
+    </div>
+</div>
+
+
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$location'];
+
+        function DemoController($log, $location) {
+
+            var ctrl = this;
+            ctrl.model = {
+                data: '',
+                dt: new Date()
+            };
+            ctrl.fn = {
+            };
+        }
+    })();
+</script>
+</body>
+</html>
+
+

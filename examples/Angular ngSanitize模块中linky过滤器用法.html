@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular ngSanitize模块中linky过滤器用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-sanitize/angular-sanitize.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+
+    <p>将html字符串中的链接放在 <code>a</code>标签中。</p>
+    <div ng-bind-html="demo.model.snippet | linky"></div>
+
+    <p>转换html字符串中的链接字符串，并在新窗口打开。</p>
+    <div ng-bind-html="demo.model.snippetWithTarget | linky:'_blank'"></div>
+
+    <p>使用 <code>ng-bind</code>指令是不行的。</p>
+    <div ng-bind="snippet"></div>
+</div>
+
+
+<script>
+
+    angular.module('demo', ['ngSanitize']);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                snippet: 'Pretty text with some links:\n'+
+                'http://angularjs.org/,\n'+
+                'mailto:us@somewhere.org,\n'+
+                'another@somewhere.org,\n'+
+                'and one more: ftp://127.0.0.1/.',
+                snippetWithTarget: 'http://angularjs.org/'
+            };
+            ctrl.fn = {};
+
+        }
+    })();
+
+</script>
+</body>
+</html>
+
+

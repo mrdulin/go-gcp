@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular decorator用法</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body ng-app="demo">
+<div ng-controller="DemoController as DemoCtrl">
+    <p ng-bind="DemoCtrl.model.name"></p>
+
+    <foo name="Angular Tips" fn="DemoCtrl.fn.updateCounter()"></foo>
+    Times clicked: {{DemoCtrl.model.counter}}
+</div>
+<script>
+    var demo = angular.module('demo', []);
+
+    demo.config(['$provide', function ($provide) {
+
+        $provide.decorator('Test', function ($delegate) {
+            //$delegate为原始service的实例，该例子为Test服务
+            $delegate.getName = function () {
+                return 'name is: decorator';
+            };
+            return $delegate;
+        });
+
+        $provide.decorator('fooDirective', ['$delegate', '$controller', function ($delegate, $controller) {
+
+            var directive = $delegate[0];
+
+            var compile = directive.compile,
+                    link = directive.link;
+
+            //directive.scope.fn = '&'; 无效，原因：
+            //the scope info is now parsed once instead of once per link so it isn't picking up the changes.
+            directive.$$isolateBindings['fn'] = {
+                attrName: 'fn',
+                mode: '&',
+                optional: true
+            };
+
+            //此处会覆盖原来directive的compile函数，但可以通过apply方法避免覆盖。
+            directive.compile = function (tElement, tAttrs) {
+                compile.apply(this, arguments);
+                tElement.append('<div>Added in the decorator</div>');
+                return function (scope, element, attrs) {
+                    link.apply(this, arguments);
+                    //扩展link中方法
+                    element.bind('click', function () {
+                        scope.$apply(function () {
+                            scope.fn();
+                        });
+                    });
+                };
+            };
+
+            var controllerName = directive.controller;
+            directive.controller = function($scope, $timeout) {
+                angular.extend(this, $controller(controllerName, {$scope: $scope}));
+
+                $timeout(function() {
+                    $scope.name = "from the decorator now";
+                }, 3000);
+            };
+
+            return $delegate;
+
+        }]);
+
+    }]);
+
+    demo.controller('DemoController', ['$scope', '$log', 'Test',
+        function ($scope, $log, Test) {
+
+            var ctrl = this;
+            ctrl.model = {};
+            ctrl.fn = {};
+
+            ctrl.model.name = Test.getName();
+
+            ctrl.model.counter = 0;
+
+            ctrl.fn.updateCounter = function () {
+                ctrl.model.counter++;
+            };
+
+        }]);
+
+
+    demo.provider('Test', function () {
+
+        var name = 'novaline';
+
+        return {
+            setName: function (newName) {
+                name = newName;
+            },
+            $get: ['$log', function ($log) {
+
+                function getName() {
+                    return name;
+                }
+
+                return {
+                    publicVar: 'service',
+                    getName: getName
+                }
+            }]
+        }
+
+    });
+
+    demo.directive("foo", function () {
+        return {
+            restrict: 'E',
+            scope: {
+                name: "@"
+            },
+            replace: true,
+            template: '<div>Hello, {{name}}</div>',
+            compile: function (tElement, tAttrs) {
+                tElement.append('<div>Added in compile</div>');
+            },
+            link: function (scope, element, attrs) {
+                if (angular.isDefined(attrs.name)) {
+                    attrs.name = attrs.name + "!";
+                }
+            },
+            controller: function($scope) {
+                $scope.name = "from the directive controller";
+            }
+        };
+    });
+
+</script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular select指令用法</title>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/underscore/underscore.js"></script>
+</head>
+<body ng-app="demo">
+
+<!-- 
+    ngOptions指令用来在<select>元素中动态生成<option>元素。
+
+    也可以在<option>元素上使用ngRepeat指令，可以得到相同的结果。
+
+    然而，使用ngOptions指令有一些好处，例如更少的内存占用，更好的性能，
+
+    因为ngRepeat会给每一个repeat出来的元素创建一个新的作用域scope。
+
+    此外，ngOptions更具灵活性，它使select元素知道如何通过select as去
+
+    给的ng-model指令所指定的model赋值。
+
+    当select元素上的ng-model需要绑定一个非字符串的model时，应该使用
+
+    ngOptions。
+
+
+    当select中的一个菜单项被选中时，该菜单项绑定的数组元素或是对象的属性将会被绑定到select的ng-model所指定的model上。
+
+    可选地，通过硬编码放一个option元素在select中，这个option元素的value属性是空字符串。这个option会被认为是为选择option。
+ -->
+
+
+
+
+
+<div ng-controller="DemoController as DemoCtrl">
+    <h4>1、数组结构数据，value字段是选择的值，text字段是视图上显示的值，根据group字段进行分组，根据value字段的首字母进行排序。</h4>
+
+    <form name="myForm" novalidate>
+
+
+        <div>
+            <label for="bookSelect1">正序</label>
+            <select id="bookSelect1"
+                    name="bookSelect"
+                    ng-options="option.value as option.text group by option.group for option in DemoCtrl.model.options | orderBy: '+value[0]'"
+                    ng-model="DemoCtrl.model.optionValue"
+                    ng-required="true"
+                    ng-change="DemoCtrl.fn.optionValueChange(DemoCtrl.model.optionValue)">
+            </select>
+        </div>
+
+        <div>
+            <label for="bookSelect2">逆序</label>
+            <select id="bookSelect2"
+                    name="bookSelect"
+                    ng-options="option.value as option.text group by option.group for option in DemoCtrl.model.options | orderBy: '-value[0]'"
+                    ng-model="DemoCtrl.model.optionValue"
+                    ng-required="true"
+                    ng-change="DemoCtrl.fn.optionChange()">
+            </select>
+        </div>
+
+        <div>
+            <label for="bookSelect2">直接获取option的中文文本</label>
+            <select name="bookSelect"
+                    ng-options="option.text as option.text group by option.group for option in DemoCtrl.model.options"
+                    ng-model="DemoCtrl.model.optionText"
+                    ng-required="true"
+                    ng-change="DemoCtrl.fn.optionChange()">
+            </select>
+        </div>
+
+
+        <div>
+            <label for="bookSelect3">不使用select as</label>
+            <select id="bookSelect3"
+                    name="bookSelect3"
+                    ng-options="option.text for option in DemoCtrl.model.options"
+                    ng-model="DemoCtrl.model.option"
+                    ng-required="true"
+                    ng-change="DemoCtrl.fn.optionChange()">
+            </select>
+        </div>
+
+
+        <div>
+            <label for="bookSelect4">直接在$scope上绑定</label>
+            <select id="bookSelect4"
+                    name="bookSelect4"
+                    ng-options="option.text for option in options"
+                    ng-model="option"
+                    ng-required="true"
+                    ng-change="DemoCtrl.fn.optionChange()">
+            </select>
+        </div>
+        
+
+        <div>
+            <label for="bookSelect5">使用track by</label>
+            <select id="bookSelect5"
+                    name="bookSelect5"
+                    ng-options="option.text for option in options track by option.value"
+                    ng-model="option"
+                    ng-change="DemoCtrl.fn.optionChange()"
+                    ng-required="true">
+            </select>
+        </div>
+
+
+
+        <p ng-show="myForm.bookSelect.$valid" ng-style="DemoCtrl.fn.dynamicStyle(myForm.bookSelect)">选择合法</p>
+        <p ng-show="myForm.bookSelect.$error.required" ng-style="DemoCtrl.fn.dynamicStyle(myForm.bookSelect)">还没有选择啊~</p>
+        <p>选择的教程:<strong ng-bind="DemoCtrl.model.optionValue"></strong></p>
+    </form>
+
+
+
+
+    <h4>2、对象结构数据</h4>
+    <select ng-model="DemoCtrl.model.cityValue"
+            ng-options="cityKey as cityTxt for (cityKey, cityTxt) in DemoCtrl.model.cityMap">
+    </select>
+    <p>选择的城市:<strong ng-bind="DemoCtrl.model.cityMap[DemoCtrl.model.cityValue]"></strong></p>
+</div>
+<script>
+    var demo = angular.module('demo', []);
+
+    demo.controller('DemoController', ['$scope', '$log', function ($scope, $log) {
+
+        var ctrl = this;
+        ctrl.model = {};
+        ctrl.fn = {};
+
+        $scope.options = ctrl.model.options = [
+            {
+                value: 'angular',
+                text: 'angularJS教程',
+                group: 'JavaScript类'
+            },
+            {
+                value: 'backbone',
+                text: 'backboneJS教程',
+                group: 'JavaScript类'
+            },
+            {
+                value: 'SASS',
+                text: 'SASS教程',
+                group: 'CSS类'
+            },
+            {
+                value: 'LESS',
+                text: 'LESS教程',
+                group: 'CSS类'
+            }
+        ];
+
+        $scope.option = $scope.options[0];
+
+        ctrl.model.cityMap = {
+            'beijing': '北京',
+            'shanghai': '上海',
+            'chengdu': '成都',
+            'shenzhen': '深圳'
+        };
+
+        ctrl.model.cityValue = _.first(_.keys(ctrl.model.cityMap));
+
+        ctrl.model.optionValue = _.first(ctrl.model.options).value;
+        ctrl.model.optionText = _.first(ctrl.model.options).text;
+        ctrl.model.option = _.first(ctrl.model.options);
+
+        $log.info(ctrl.model.optionValue);
+        $log.info(ctrl.model.option);
+
+        //Do not use $scope.$watch to listen model;
+        //It's hard to test and it's inefficient.
+        ctrl.fn.optionValueChange = function(optionValue) {
+            $log.info(ctrl.model.optionValue);
+        };
+
+        ctrl.fn.dynamicStyle = function(select) {
+            if(select.$error.required) {
+                return {
+                    color: 'blue'
+                };
+            } else if(select.$valid) {
+                return {
+                    color: 'red'
+                };
+            }
+        };
+
+        ctrl.fn.optionChange = function() {
+            //获取选择的option的中文文本
+            $log.info(ctrl.model.optionText);
+            //获取选择的option对象
+//            $log.info(ctrl.model.option);
+            //
+//            $log.info($scope.option)
+        }
+
+    }]);
+</script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>ui.bootstrap.alert用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <script src="../bower_components/angular-animate/bower-angular-animate-1.4.8/angular-animate.js"></script>
+    <script src="../bower_components/angular-aria/angular-aria.js"></script>
+    <script src="../bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="../bower_components/angular-i18n/angular-locale_zh-cn.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <section id="alert">
+                <div class="page-header">
+                    <h1>
+                        Alert
+                        <small>(ui.bootstrap.alert)</small>
+                    </h1>
+                </div>
+                <div class="row">
+
+                    <div class="col-md-6">
+                        <div ng-controller="DemoController as demo">
+                            <uib-alert ng-repeat="alert in demo.model.alerts"
+                                       type="{{alert.type}}"
+                                       close="demo.fn.closeAlert($index)">
+                                {{alert.msg}}
+                            </uib-alert>
+
+                            <uib-alert template-url="alert.html">一个快乐的alert!</uib-alert>
+
+                            <button type="button" class='btn btn-default' ng-click="demo.fn.addAlert()">增加alert</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>uib-alert配置</h3>
+                        <ul>
+                            <li>
+                                <em><code>close</code>(默认值： <code>无</code>)</em>
+                                - 当<code>alert</code>关闭时触发的回调函数，如果这个属性存在，那么在视图上会有一个关闭按钮。
+                            </li>
+                            <li>
+                                <em><code>dismiss-on-timeout</code>(默认值：<code>无</code>)(可选)</em>
+                                - alert经过指定毫秒数后，自动关闭。这个属性的生效依赖于<code>close</code>属性的存在。
+                            </li>
+                            <li>
+                                <em><code>template-url</code>(默认值：<code>template/alert/alert.html</code>)</em>
+                                - 自定义alert指令模版，覆盖原模版。
+                            </li>
+                            <li>
+                                <em><code>type</code>(默认值：<code>warning</code>)</em>
+                                - 自定义alert的类型。可用类型参考bootstrap中alert的类型。视图表现alert中文本和背景的颜色。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script type="text/ng-template" id="alert.html">
+    <div class="alert" style="background-color:#fa39c3;color:white" role="alert">
+        <div ng-transclude></div>
+    </div>
+</script>
+<script>
+
+    angular.module('demo', [
+        'ui.bootstrap',
+        'ngAnimate',
+        'ngAria'
+    ]);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var ctrl = this;
+            ctrl.model = {
+                alerts:  [
+                    { type: 'danger', msg: '啊欧~出错了~' },
+                    { type: 'success', msg: '保存成功！' }
+                ]
+            };
+            ctrl.fn = {
+                addAlert: addAlert,
+                closeAlert: closeAlert
+            };
+
+            function addAlert() {
+                ctrl.model.alerts.push({msg: 'Another alert!'});
+            }
+
+            function closeAlert(index) {
+                ctrl.model.alerts.splice(index, 1);
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

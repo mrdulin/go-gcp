@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular $q.defer()用法</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+<div ng-controller="DemoController as demo">
+    {{demo.model.data}}
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$location', 'DemoService'];
+
+        function DemoController($log, $location, DemoService) {
+
+            var ctrl = this;
+            ctrl.model = {
+                data: ''
+            };
+            ctrl.fn = {
+                requestData: requestData
+            };
+
+            ctrl.fn.requestData();
+
+            function requestData() {
+                DemoService.requestData().then(function(data) {
+                    ctrl.model.data = data;
+                });
+            }
+        }
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .service('DemoService', DemoService);
+
+        DemoService.$inject = ['$timeout', '$q'];
+
+        function DemoService($timeout, $q) {
+
+            var service = this;
+
+            service = {
+                requestData: requestData
+            };
+
+            return service;
+
+            function requestData() {
+
+                var deferred = $q.defer();
+
+                $timeout(function () {
+                    deferred.resolve('test');
+                }, 3000);
+
+                //此处return的promise的successCallBack的参数是经过处理的data('加了$q.defer()字符串')
+                return deferred.promise.then(function(data) {
+                    return data　+ '$q.defer()';
+                });
+
+                //或者，在此处不对$timeout中resolve的数据进行处理
+//                return deferred.promise;
+            }
+
+        }
+    })()
+</script>
+</body>
+</html>
+
+

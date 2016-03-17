@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular Controller as语法，获取父级作用域的数据</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body>
+
+//demo是构造函数DemoController的实例
+<div ng-controller="DemoController as demo">
+    {{ demo.model.name }}
+
+    <div ng-controller="AnotherController as another">
+        {{ another.model.name }}
+        {{ demo.model.name }}
+
+        <div ng-controller="CupController as cup">
+            {{ cup.model.name }}
+            {{ demo.model.name }}
+            {{ another.model.name }}
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    angular.module('demo', [
+
+    ]);
+
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = [];
+
+        function DemoController() {
+
+            var ctrl = this;
+            ctrl.model = {};
+            ctrl.fn = {};
+
+            ctrl.model.name = 'angular';
+
+        }
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('AnotherController', AnotherController);
+
+        AnotherController.$inject = [];
+
+        function AnotherController() {
+
+            var ctrl = this;
+            ctrl.model = {};
+            ctrl.fn = {};
+
+            ctrl.model.name = 'backbone';
+
+        }
+
+    })();
+
+    (function() {
+        angular
+                .module('demo')
+                .controller('CupController', CupController);
+
+        CupController.$inject = [];
+
+        function CupController() {
+
+            var ctrl = this;
+            ctrl.model = {};
+            ctrl.fn = {};
+
+            ctrl.model.name = 'jquery';
+
+        }
+
+    })();
+
+
+</script>
+</body>
+</html>
+
+

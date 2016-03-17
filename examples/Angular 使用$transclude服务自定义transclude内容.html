@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular 使用$transclude服务自定义transclude内容</title>
+    <script src="../bower_components/angular/angular.js"></script>
+</head>
+<body ng-controller="DemoController as vm">
+
+<div class="a" my-directive>将要被transclude的内容：{{greeting}}:{{vm.name}}</div>
+
+<div class="a" my-directive2>将要被transclude的内容: {{greeting}}:{{vm.name}}</div>
+
+<script>
+    angular.module('app', []);
+
+    (function() {
+        angular
+                .module('app')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log', '$scope'];
+
+        function DemoController($log, $scope) {
+
+            var vm = this;
+
+            vm.name = 'novaline';
+
+            $scope.greeting = 'hello';
+        }
+
+    })();
+
+    (function() {
+        angular
+                .module('app')
+                .directive('myDirective', myDirective);
+
+        myDirective.$inject = ['$log'];
+
+        function myDirective($log) {
+            return {
+                restrict: 'A',
+                transclude: true,
+                template: '<div class="b">transcluded: <span ng-transclude></span></div>'
+            };
+        }
+    })();
+
+    (function() {
+        angular
+                .module('app')
+                .directive('myDirective2', myDirective2);
+
+        myDirective2.$inject = ['$log'];
+
+        function myDirective2($log) {
+            return {
+                restrict: 'A',
+                transclude: true,
+                template: '<div class="b">transcluded: </div>',
+                controller: function($element, $attrs, $transclude) {
+                    var vm = this;
+                    vm.name = 'angular';
+
+                    $transclude(function(transcludedContent, transclusionScope) {
+                        transclusionScope.greeting = 'welcome';
+                        $log.info('transcludedContent:',transcludedContent);
+                        $log.info('transclusionScope:',transclusionScope);
+                        var transcluded = angular.element('<span style="color:red"></span>').append(transcludedContent);
+                        $log.info(transcluded);
+                        $log.info('$element:', $element);
+                        $element.children().append(transcluded);
+                    });
+                },
+                controllerAs: 'vm'
+            };
+        }
+    })();
+
+
+</script>
+</body>
+</html>
