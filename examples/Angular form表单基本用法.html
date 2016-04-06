@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="demo">
+<head>
+    <meta charset="UTF-8">
+    <title>Angular form表单基本用法</title>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap-theme.css"/>
+    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.css"/>
+    <script src="../bower_components/angular/angular.js"></script>
+    <style>
+        legend {
+            display: block;
+            padding-left: 2px;
+            padding-right: 2px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+
+<div ng-controller="DemoController as vm">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                使用ngSubmit提交表单，多个输入域，有提交按钮
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <form id="loginForm" name="loginForm" class="form-horizontal" ng-submit="vm.fn.submit($event)"
+                      novalidate>
+                    <fieldset ng-disabled="vm.model.isSubmitting">
+                        <legend>表单1</legend>
+                        <div class="form-group">
+                            <label for="username" class="control-label col-md-2">用户名</label>
+
+                            <div class="col-md-10">
+                                <input id="username" name="username" class="form-control" type="text"
+                                       ng-model="vm.model.username"/>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="control-label col-md-2">密码</label>
+
+                            <div class="col-md-10">
+                                <input id="password" name="password" class="form-control" type="password"
+                                       ng-model="vm.model.password"/>
+                            </div>
+                        </div>
+
+                        <!-- 注意button的type类型是submit，这样用户可以通过回车键进行提交，按回车时会调用form上的ng-submit指定的方法 -->
+                        <button class="btn btn-primary" type="submit" form="loginForm">登陆</button>
+                        <button class="btn btn-default" ng-click="vm.fn.reset()" form="loginForm">重置</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <!-- 可以通过button标签的html5属性form来指定其所属于哪一个表单 -->
+                <!--<button class="btn btn-primary" type="submit" form="loginForm">登陆</button>-->
+                <!--<button class="btn btn-default" ng-click="vm.fn.reset()" form="loginForm">重置</button>-->
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+
+    angular.module('demo', []);
+
+    (function () {
+        angular
+                .module('demo')
+                .controller('DemoController', DemoController);
+
+        DemoController.$inject = ['$log'];
+
+        function DemoController($log) {
+
+            var vm = this;
+            vm.model = {
+                username: '',
+                password: '',
+                isSubmitting: false
+            };
+            vm.fn = {
+                submit: submit,
+                reset: reset
+            };
+
+            function reset() {
+                vm.model.username = vm.model.password = '';
+            }
+
+            function submit($event) {
+                $log.info(vm.model.username, vm.model.password);
+            }
+
+        }
+    })();
+</script>
+</body>
+</html>
+
+

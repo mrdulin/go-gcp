@@ -30,7 +30,7 @@
                 }
             };
 
-            //需求：给adapters上的inbound.p2r.status赋值
+            //需求1：给adapters上的inbound.p2r.status赋值
 
             //不用$parse服务
 //            if(vm.adapters && vm.adapters.inbound && vm.adapters.inbound.p2r) {
@@ -43,6 +43,24 @@
 
             $log.info(vm.adapters.outbound.tcp.status);
 
+            //需求2：使用可能存在的属性，下例中使用可能存在的err_no属性
+
+            var data = {
+                result: {   //result属性可能存在也可能不存在
+                    err_no: '123'   //err_no属性可能存在也可能不存在
+                }
+            };
+
+            //不使用$parse服务
+            if (data.result && data.result.err_no) {
+                var errNo = data.result.err_no;
+                $log.info('errNo: ' + errNo);
+            }
+
+            //使用$parse服务
+            var err_no = $parse('result.err_no')(data);
+
+            $log.info('err_no: ' + err_no);
         }
     })();
 </script>
