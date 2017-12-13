@@ -2,11 +2,11 @@ var angular = require('angular');
 var ngRoute = require('angular-route');
 
 angular.module('demo', [
-    'ngRoute',
-    'demo.controller',
-    'demo.service',
-    'demo.filter',
-    'demo.directive'
+  'ngRoute',
+  'demo.controller',
+  'demo.service',
+  'demo.filter',
+  'demo.directive'
 ]);
 
 angular.module('demo.controller', []);

@@ -3,13 +3,13 @@
  */
 
 angular
-    .module('demo.controller')
-    .controller('MainCtrl',  MainCtrl);
+  .module('demo.controller')
+  .controller('MainCtrl', MainCtrl);
 
 function MainCtrl($log) {
-    var vm = this;
-    angular.extend(vm, {
+  var vm = this;
+  angular.extend(vm, {
 
-    });
-    $log.info('main ctrl')
+  });
+  $log.info('main ctrl')
 }

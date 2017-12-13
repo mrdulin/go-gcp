@@ -1,22 +1,28 @@
 <div class="container" id="detail">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="media">
-                <div class="media-left">
-                    <a>
-                        <img class="media-object" src="{{::vm.bookDetail.Image}}" alt="">
-                    </a>
-                </div>
-                <div class="media-body">
-                    <h4 class="media-heading" ng-bind="::vm.bookDetail.Title"></h4>
-                    <h3 ng-bind="::vm.bookDetail.SubTitle"></h3>
-                    <p ng-bind="::vm.bookDetail.Description"></p>
-                    <p>ISBN: <span ng-bind="::vm.bookDetail.ISBN"></span></p>
-                    <p>Publisher: <span ng-bind="::vm.bookDetail.Publisher"></span></p>
-                    <p>Year: <span ng-bind="::vm.bookDetail.Year"></span></p>
-                    <a ng-href="{{::vm.bookDetail.Download}}" class="btn btn-primary">下载</a>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="media">
+        <div class="media-left">
+          <a>
+            <img class="media-object" src="{{::vm.bookDetail.Image}}" alt="">
+          </a>
         </div>
+        <div class="media-body">
+          <h4 class="media-heading" ng-bind="::vm.bookDetail.Title"></h4>
+          <h3 ng-bind="::vm.bookDetail.SubTitle"></h3>
+          <p ng-bind="::vm.bookDetail.Description"></p>
+          <p>ISBN:
+            <span ng-bind="::vm.bookDetail.ISBN"></span>
+          </p>
+          <p>Publisher:
+            <span ng-bind="::vm.bookDetail.Publisher"></span>
+          </p>
+          <p>Year:
+            <span ng-bind="::vm.bookDetail.Year"></span>
+          </p>
+          <a ng-href="{{::vm.bookDetail.Download}}" class="btn btn-primary">下载</a>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
