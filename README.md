@@ -1,7 +1,6 @@
-angular simple app with `browserify` and browserify plugins
+# Ddecorators
 
-1. `npm i`
+当多个装饰器应用在一个声明上时会进行如下步骤的操作：
 
-2. `npm run watch`开启文件监视，自动编译输出`bundle.js`和`bundle.css`到`dist`目录
-
-3. `npm run build`编译输出`bundle.js`和`bundle.css`到`dist`目录
+- 1.由上至下依次对装饰器表达式求值。
+- 2.求值的结果会被当作函数，由下至上依次调用。
