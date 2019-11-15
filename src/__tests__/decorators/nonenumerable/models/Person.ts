@@ -1,4 +1,4 @@
-import { nonenumerable } from '../../../../decorators/nonenumerable';
+import { nonenumerable } from '../../../../decorators/non-enumerable';
 
 class Person {
   @nonenumerable
