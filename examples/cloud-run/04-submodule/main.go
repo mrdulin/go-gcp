@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gcp-cloud-run/04-submodule/app/reports"
+	"github.com/mrdulin/go-gcp/examples/cloud-run/04-submodule/app/reports"
 	"log"
 	"net/http"
 )

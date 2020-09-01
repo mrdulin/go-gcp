@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"gcp-cloud-run/05-connecting-to-cloud-sql/infra/database"
-	"github.com/jmoiron/sqlx"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/jmoiron/sqlx"
+	"github.com/mrdulin/go-gcp/examples/cloud-run/05-connecting-to-cloud-sql/infra/database"
 )
 
 type user struct {

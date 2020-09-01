@@ -1,2 +1,0 @@
-# cloud-function/03-multiple-functions-structure/domain v0.0.0 => ../../../domain
-cloud-function/03-multiple-functions-structure/domain/services
