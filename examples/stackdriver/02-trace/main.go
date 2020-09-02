@@ -16,16 +16,16 @@ import (
 )
 
 func main() {
-
 	exporter, err := stackdriver.NewExporter(stackdriver.Options{
 		ProjectID: os.Getenv("GOOGLE_CLOUD_PROJECT"),
 		TraceClientOptions: []option.ClientOption{
-			option.WithCredentialsFile(path.Join("../../.gcp/stackdriver-02-trace-admin.json")),
+			option.WithCredentialsFile(path.Join("./.gcp/stackdriver-trace-admin.json")),
 		},
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	trace.RegisterExporter(exporter)
 	trace.ApplyConfig(trace.Config{DefaultSampler: trace.AlwaysSample()})
 
